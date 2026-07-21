@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Playfair_Display, Poppins } from "next/font/google";
 import { CartProvider } from "@/lib/cart";
+import { LocationProvider } from "@/lib/location";
 import { storeConfig } from "@/data/store";
 import "./globals.css";
 
@@ -8,6 +9,12 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-playfair",
 });
 
 export const metadata: Metadata = {
@@ -41,11 +48,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${poppins.variable} h-full antialiased`}>
+    <html
+      lang="pt-BR"
+      className={`${poppins.variable} ${playfair.variable} h-full antialiased`}
+    >
       <body className="min-h-full font-sans">
-        <CartProvider>
-          <div className="app-shell">{children}</div>
-        </CartProvider>
+        <LocationProvider>
+          <CartProvider>
+            <div className="app-shell">{children}</div>
+          </CartProvider>
+        </LocationProvider>
       </body>
     </html>
   );

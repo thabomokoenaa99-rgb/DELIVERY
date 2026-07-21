@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { formatBRL, type Product } from "@/data/store";
 
@@ -31,14 +33,16 @@ export function ProductCard({ product }: Props) {
               formatBRL(product.price)
             )}
           </span>
-          {product.highlight && <span className="highlight"><i>{product.highlight}</i></span>}
+          {product.highlight && (
+            <span className="highlight">
+              <i>{product.highlight}</i>
+            </span>
+          )}
           {typeof product.stock === "number" && (
             <span className="stock">
-              Apenas{" "}
-              <b className="stock-pill">
-                {product.stock} combo(s)
-              </b>{" "}
-              com esse preço especial
+              🔥 Apenas{" "}
+              <b className="stock-pill">{product.stock} combo(s)</b> com esse preço
+              especial
             </span>
           )}
         </div>
@@ -46,10 +50,10 @@ export function ProductCard({ product }: Props) {
           <figure>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/placeholder-food.svg"
+              src={product.image}
               width={110}
               height={110}
-              alt="Produto"
+              alt={product.title}
               loading="lazy"
             />
           </figure>

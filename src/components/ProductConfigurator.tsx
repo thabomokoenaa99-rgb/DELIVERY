@@ -8,6 +8,7 @@ import {
   drinks,
   flavors,
   formatBRL,
+  getOptionLabel,
   type Product,
 } from "@/data/store";
 import { useCart } from "@/lib/cart";
@@ -78,7 +79,7 @@ export function ProductConfigurator({ product }: Props) {
   const ready = useMemo(() => {
     const pizzasOk =
       pizza1.length > 0 && (product.pizzaCount < 2 || pizza2.length > 0);
-    const drinksOk = drink.length === Math.min(1, product.drinkCount) || drink.length >= 1;
+    const drinksOk = drink.length >= Math.min(product.drinkCount, 1);
     return pizzasOk && drinksOk;
   }, [pizza1, pizza2, drink, product.pizzaCount, product.drinkCount]);
 
@@ -95,10 +96,12 @@ export function ProductConfigurator({ product }: Props) {
   function finish() {
     if (!ready) return;
     const details = [
-      `Pizza 1: ${pizza1.join(",")}`,
-      product.pizzaCount > 1 ? `Pizza 2: ${pizza2.join(",")}` : null,
-      border.length ? `Borda: ${border.join(",")}` : null,
-      `Bebida: ${drink.join(",")}`,
+      `Pizza 1: ${getOptionLabel(flavors, pizza1)}`,
+      product.pizzaCount > 1
+        ? `Pizza 2: ${getOptionLabel(flavors, pizza2)}`
+        : null,
+      border.length ? `Borda: ${getOptionLabel(borders, border)}` : null,
+      `Bebida: ${getOptionLabel(drinks, drink)}`,
       note ? `Obs: ${note}` : null,
     ]
       .filter(Boolean)
@@ -129,7 +132,9 @@ export function ProductConfigurator({ product }: Props) {
           <b className="price-pill">{formatBRL(product.price)}</b>
         </p>
         {product.stock != null && (
-          <p className="stock-inline">apenas {product.stock} combos disponíveis</p>
+          <p className="stock-inline">
+            🔥 Apenas {product.stock} combo(s) com esse preço especial
+          </p>
         )}
       </div>
 

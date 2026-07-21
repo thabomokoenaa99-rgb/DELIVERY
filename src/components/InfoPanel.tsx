@@ -1,6 +1,11 @@
+"use client";
+
 import { storeConfig } from "@/data/store";
+import { useLocation } from "@/lib/location";
 
 export function InfoPanel() {
+  const { displayCity, displayState } = useLocation();
+
   return (
     <aside id="info" className="info-panel">
       <a className="fechar" href="#fechar" aria-label="Fechar">
@@ -14,13 +19,11 @@ export function InfoPanel() {
       <p>Pix</p>
       <br />
       <h2>Endereço</h2>
-      <p>
-        {storeConfig.city} - {storeConfig.state}
-      </p>
+      <p>{storeConfig.address}</p>
       <br />
       <h2>Áreas de Entrega</h2>
       <h3>
-        {storeConfig.city} - {storeConfig.state}
+        {displayCity} - {displayState}
       </h3>
       <p>GRÁTIS (hoje)</p>
     </aside>
