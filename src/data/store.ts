@@ -29,7 +29,7 @@ export const storeConfig = {
   name: "Pizzaria Bella Napoli",
   tagline: "Faça seu pedido!",
   minOrder: 10,
-  deliveryTime: "30-50",
+  deliveryTime: "20-30",
   deliveryFeeLabel: "Grátis",
   rating: 4.8,
   reviewsRecent: 136,

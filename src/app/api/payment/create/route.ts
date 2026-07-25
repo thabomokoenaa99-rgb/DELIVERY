@@ -111,12 +111,31 @@ export async function POST(request: Request) {
         transactionId: data.data.transactionId,
         status: data.data.status,
         amount: data.data.amount,
-        paymentData: {
-          qrCode: data.data.paymentData?.qrCode,
-          qrCodeBase64: data.data.paymentData?.qrCodeBase64,
-          copyPaste: data.data.paymentData?.copyPaste,
-          expiresAt: data.data.paymentData?.expiresAt,
-        },
+        paymentData: (() => {
+          const pd = data.data.paymentData ?? {};
+          const qrCode =
+            pd.qrCode ?? pd.qrcode ?? pd.emv ?? pd.pixCopiaECola ?? null;
+          const copyPaste =
+            pd.copyPaste ??
+            pd.copiaCola ??
+            pd.pixCopiaECola ??
+            pd.qrCode ??
+            pd.qrcode ??
+            null;
+          const qrCodeBase64 =
+            pd.qrCodeBase64 ??
+            pd.qrcodeBase64 ??
+            pd.encodedImage ??
+            pd.imagemQrcode ??
+            pd.qrCodeImage ??
+            null;
+
+          return {
+            qrCode,
+            qrCodeBase64,
+            copyPaste,
+          };
+        })(),
       },
     });
   } catch {

@@ -773,6 +773,33 @@ a {
   margin-top: -8px;
 }
 
+.checkout-brand {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.checkout-logo {
+  width: min(220px, 70vw);
+  height: auto;
+  object-fit: contain;
+}
+
+.delivery-eta {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.delivery-eta strong {
+  color: var(--brand-dark);
+}
+
+.pix-eta {
+  margin: 8px auto 0;
+  max-width: 320px;
+}
+
 .checkout-section,
 .checkout-form,
 .pix-panel {
@@ -843,6 +870,19 @@ a {
 .pix-wait {
   color: var(--brand-dark);
   font-weight: 600;
+}
+
+.pix-status {
+  font-size: 14px;
+  color: #555;
+  margin: 8px 0;
+}
+
+.pix-refresh {
+  margin-top: 16px;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .payment-success {

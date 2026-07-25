@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import QRCode from "qrcode";
 import { formatBRL, storeConfig } from "@/data/store";
 import { useCart } from "@/lib/cart";
 import { useLocation } from "@/lib/location";
 
 type PaymentResult = {
   transactionId: string;
+  qrCode?: string;
   qrCodeBase64?: string;
   copyPaste?: string;
-  expiresAt?: string;
 };
 
 type FormData = {
@@ -41,6 +42,25 @@ const emptyForm: FormData = {
   zipCode: "",
 };
 
+function toQrImageSrc(value?: string | null): string | null {
+  if (!value) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("data:image")) return trimmed;
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  // Base64 puro (imagem), não payload EMV Pix
+  if (
+    trimmed.length > 64 &&
+    !trimmed.includes(".") &&
+    /^[A-Za-z0-9+/=\s]+$/.test(trimmed)
+  ) {
+    return `data:image/png;base64,${trimmed.replace(/\s/g, "")}`;
+  }
+  return null;
+}
+
 export default function CheckoutPage() {
   const { items, total, removeItem, clear } = useCart();
   const { displayCity, displayState } = useLocation();
@@ -50,9 +70,13 @@ export default function CheckoutPage() {
     state: displayState,
   });
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
   const [payment, setPayment] = useState<PaymentResult | null>(null);
+  const [qrSrc, setQrSrc] = useState<string | null>(null);
   const [paid, setPaid] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setForm((prev) => ({
@@ -63,26 +87,85 @@ export default function CheckoutPage() {
   }, [displayCity, displayState]);
 
   useEffect(() => {
+    if (!payment) {
+      setQrSrc(null);
+      return;
+    }
+
+    const fromApi = toQrImageSrc(payment.qrCodeBase64);
+    if (fromApi) {
+      setQrSrc(fromApi);
+      return;
+    }
+
+    const payload = payment.copyPaste || payment.qrCode;
+    if (!payload) {
+      setQrSrc(null);
+      return;
+    }
+
+    let cancelled = false;
+    QRCode.toDataURL(payload, {
+      width: 280,
+      margin: 2,
+      errorCorrectionLevel: "M",
+    })
+      .then((url) => {
+        if (!cancelled) setQrSrc(url);
+      })
+      .catch(() => {
+        if (!cancelled) setQrSrc(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [payment]);
+
+  useEffect(() => {
     if (!payment?.transactionId || paid) return;
 
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`/api/payment/status/${payment.transactionId}`);
-        const data = await res.json();
-        if (data.success && data.data.status === "PAID") {
-          setPaid(true);
-          clear();
-        }
-      } catch {
-        /* polling silencioso */
-      }
+    const interval = setInterval(() => {
+      void checkPaymentStatus({ silent: true });
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [payment?.transactionId, paid, clear]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- polling only needs transaction id
+  }, [payment?.transactionId, paid]);
 
   function updateField(field: keyof FormData, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function checkPaymentStatus(opts?: { silent?: boolean }) {
+    if (!payment?.transactionId || paid) return;
+
+    if (!opts?.silent) {
+      setChecking(true);
+      setStatusMessage("");
+      setError("");
+    }
+
+    try {
+      const res = await fetch(`/api/payment/status/${payment.transactionId}`);
+      const data = await res.json();
+      if (data.success && data.data.status === "PAID") {
+        setPaid(true);
+        clear();
+        return;
+      }
+      if (!opts?.silent) {
+        setStatusMessage(
+          "Pagamento ainda não identificado. Se você já pagou, aguarde alguns segundos e tente de novo.",
+        );
+      }
+    } catch {
+      if (!opts?.silent) {
+        setError("Não foi possível verificar o pagamento. Tente novamente.");
+      }
+    } finally {
+      if (!opts?.silent) setChecking(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -91,6 +174,7 @@ export default function CheckoutPage() {
 
     setLoading(true);
     setError("");
+    setStatusMessage("");
 
     try {
       const res = await fetch("/api/payment/create", {
@@ -129,11 +213,12 @@ export default function CheckoutPage() {
         return;
       }
 
+      const pd = data.data.paymentData ?? {};
       setPayment({
         transactionId: data.data.transactionId,
-        qrCodeBase64: data.data.paymentData?.qrCodeBase64,
-        copyPaste: data.data.paymentData?.copyPaste,
-        expiresAt: data.data.paymentData?.expiresAt,
+        qrCode: pd.qrCode,
+        qrCodeBase64: pd.qrCodeBase64,
+        copyPaste: pd.copyPaste || pd.qrCode,
       });
     } catch {
       setError("Não foi possível conectar. Tente novamente.");
@@ -145,14 +230,27 @@ export default function CheckoutPage() {
   async function copyPix() {
     if (!payment?.copyPaste) return;
     await navigator.clipboard.writeText(payment.copyPaste);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   if (paid) {
     return (
       <div className="checkout-page">
+        <div className="checkout-brand">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/logo.png"
+            alt={storeConfig.name}
+            className="checkout-logo"
+          />
+        </div>
         <div className="payment-success">
           <h1>Pagamento confirmado!</h1>
           <p>Seu pedido foi recebido e já está sendo preparado.</p>
+          <p className="delivery-eta">
+            Tempo estimado de entrega: <strong>entre 20 e 30 minutos</strong>
+          </p>
           <Link href="/" className="btn-primary">
             Voltar ao cardápio
           </Link>
@@ -163,11 +261,23 @@ export default function CheckoutPage() {
 
   return (
     <div className="checkout-page">
+      <div className="checkout-brand">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/logo.png"
+          alt={storeConfig.name}
+          className="checkout-logo"
+        />
+      </div>
+
       <Link href="/" className="back-link">
         VOLTAR
       </Link>
       <h1>Finalizar pedido</h1>
       <p className="checkout-subtitle">{storeConfig.name}</p>
+      <p className="delivery-eta">
+        Tempo estimado de entrega: <strong>entre 20 e 30 minutos</strong>
+      </p>
 
       {items.length === 0 ? (
         <p>Seu carrinho está vazio.</p>
@@ -286,18 +396,24 @@ export default function CheckoutPage() {
                 required
                 maxLength={2}
                 value={form.state}
-                onChange={(e) => updateField("state", e.target.value.toUpperCase())}
+                onChange={(e) =>
+                  updateField("state", e.target.value.toUpperCase())
+                }
               />
             </label>
 
             <p className="payment-note">
-              Pagamento via <strong>Pix</strong>. Após confirmar, você receberá o QR
-              Code para pagar.
+              Pagamento via <strong>Pix</strong>. Após confirmar, o QR Code
+              aparece na tela para você pagar.
             </p>
 
             {error && <p className="form-error">{error}</p>}
 
-            <button type="submit" className="btn-primary btn-block" disabled={loading}>
+            <button
+              type="submit"
+              className="btn-primary btn-block"
+              disabled={loading}
+            >
               {loading ? "Gerando Pix..." : `Pagar ${formatBRL(total)} via Pix`}
             </button>
           </form>
@@ -306,30 +422,40 @@ export default function CheckoutPage() {
         <section className="pix-panel">
           <h2>Pague com Pix</h2>
           <p>Escaneie o QR Code ou copie o código abaixo.</p>
-          {payment.qrCodeBase64 && (
+          <p className="delivery-eta pix-eta">
+            Após a confirmação, a entrega chega{" "}
+            <strong>entre 20 e 30 minutos</strong>.
+          </p>
+
+          {qrSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={payment.qrCodeBase64}
-              alt="QR Code Pix"
-              className="pix-qr"
-            />
+            <img src={qrSrc} alt="QR Code Pix" className="pix-qr" />
+          ) : (
+            <p className="muted">Gerando QR Code…</p>
           )}
+
           {payment.copyPaste && (
             <div className="pix-copy">
               <code>{payment.copyPaste}</code>
               <button type="button" className="btn-primary" onClick={copyPix}>
-                Copiar código Pix
+                {copied ? "Código copiado!" : "Copiar código Pix"}
               </button>
             </div>
           )}
-          <p className="pix-wait">
-            Aguardando confirmação do pagamento...
-          </p>
-          {payment.expiresAt && (
-            <p className="muted">
-              Válido até {new Date(payment.expiresAt).toLocaleString("pt-BR")}
-            </p>
-          )}
+
+          <p className="pix-wait">Aguardando confirmação do pagamento…</p>
+
+          {statusMessage && <p className="pix-status">{statusMessage}</p>}
+          {error && <p className="form-error">{error}</p>}
+
+          <button
+            type="button"
+            className="btn-primary btn-block pix-refresh"
+            onClick={() => void checkPaymentStatus()}
+            disabled={checking}
+          >
+            {checking ? "Verificando…" : "Já paguei — atualizar status"}
+          </button>
         </section>
       )}
     </div>
