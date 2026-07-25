@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
+import { LocationModal } from "@/components/LocationModal";
 import { CartProvider } from "@/lib/cart";
 import { LocationProvider } from "@/lib/location";
 import { storeConfig } from "@/data/store";
@@ -56,6 +57,7 @@ export default function RootLayout({
         <LocationProvider>
           <CartProvider>
             <div className="app-shell">{children}</div>
+            <LocationModal />
           </CartProvider>
         </LocationProvider>
       </body>

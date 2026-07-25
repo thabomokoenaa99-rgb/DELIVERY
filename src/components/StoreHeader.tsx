@@ -5,7 +5,7 @@ import { storeConfig } from "@/data/store";
 import { useLocation } from "@/lib/location";
 
 export function StoreHeader() {
-  const { displayCity, displayState } = useLocation();
+  const { displayCity, displayState, distance, openModal } = useLocation();
 
   return (
     <header id="topo">
@@ -54,12 +54,17 @@ export function StoreHeader() {
             </div>
           </div>
 
-          <div className="detalhe location">
+          <button
+            type="button"
+            className="detalhe location location-btn"
+            onClick={openModal}
+            title="Alterar localização"
+          >
             <PinIcon />
             <span>
-              {displayCity} - {displayState} • {storeConfig.distance}
+              {displayCity} - {displayState} • {distance}
             </span>
-          </div>
+          </button>
 
           <div className="detalhe">
             <StarIcon />

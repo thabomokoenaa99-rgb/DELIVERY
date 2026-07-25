@@ -1,10 +1,9 @@
 "use client";
 
-import { storeConfig } from "@/data/store";
 import { useLocation } from "@/lib/location";
 
 export function InfoPanel() {
-  const { displayCity, displayState } = useLocation();
+  const { displayCity, displayState, address, openModal } = useLocation();
 
   return (
     <aside id="info" className="info-panel">
@@ -19,7 +18,10 @@ export function InfoPanel() {
       <p>Pix</p>
       <br />
       <h2>Endereço</h2>
-      <p>{storeConfig.address}</p>
+      <p>{address}</p>
+      <button type="button" className="btn-secondary location-change" onClick={openModal}>
+        Alterar localização
+      </button>
       <br />
       <h2>Áreas de Entrega</h2>
       <h3>
