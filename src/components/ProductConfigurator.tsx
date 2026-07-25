@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCart } from "@/lib/cart";
+import { trackViewContent } from "@/lib/meta-pixel";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -11,7 +13,6 @@ import {
   getOptionLabel,
   type Product,
 } from "@/data/store";
-import { useCart } from "@/lib/cart";
 
 type Props = { product: Product };
 
@@ -79,6 +80,14 @@ export function ProductConfigurator({ product }: Props) {
   const isSimple = Boolean(product.simple);
   const hasDiscount =
     typeof product.priceFrom === "number" && product.priceFrom > product.price;
+
+  useEffect(() => {
+    trackViewContent({
+      contentId: product.id,
+      contentName: product.title,
+      value: product.price,
+    });
+  }, [product.id, product.title, product.price]);
 
   const ready = useMemo(() => {
     if (isSimple) return true;

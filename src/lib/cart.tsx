@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { trackAddToCart } from "@/lib/meta-pixel";
 
 export type CartItem = {
   id: string;
@@ -40,12 +41,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
       total,
       count,
       addItem: (item) => {
+        const quantity = item.quantity ?? 1;
+        trackAddToCart({
+          contentId: item.productId,
+          contentName: item.title,
+          value: item.price * quantity,
+          quantity,
+        });
         setItems((prev) => [
           ...prev,
           {
             ...item,
             id: crypto.randomUUID(),
-            quantity: item.quantity ?? 1,
+            quantity,
           },
         ]);
       },

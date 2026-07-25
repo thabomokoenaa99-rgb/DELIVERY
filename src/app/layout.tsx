@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
 import { LocationModal } from "@/components/LocationModal";
+import { MetaPixel } from "@/components/MetaPixel";
 import { CartProvider } from "@/lib/cart";
 import { LocationProvider } from "@/lib/location";
 import { storeConfig } from "@/data/store";
@@ -54,6 +55,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans">
+        <MetaPixel />
         <LocationProvider>
           <CartProvider>
             <div className="app-shell">{children}</div>

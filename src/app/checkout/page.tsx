@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import QRCode from "qrcode";
 import { formatBRL, storeConfig } from "@/data/store";
 import { useCart } from "@/lib/cart";
 import { useLocation } from "@/lib/location";
+import {
+  trackAddPaymentInfo,
+  trackInitiateCheckout,
+  trackPurchase,
+} from "@/lib/meta-pixel";
 
 type PaymentResult = {
   transactionId: string;
@@ -77,6 +82,8 @@ export default function CheckoutPage() {
   const [qrSrc, setQrSrc] = useState<string | null>(null);
   const [paid, setPaid] = useState(false);
   const [copied, setCopied] = useState(false);
+  const initiatedRef = useRef(false);
+  const purchaseTrackedRef = useRef<string | null>(null);
 
   useEffect(() => {
     setForm((prev) => ({
@@ -85,6 +92,41 @@ export default function CheckoutPage() {
       state: displayState,
     }));
   }, [displayCity, displayState]);
+
+  useEffect(() => {
+    if (initiatedRef.current || items.length === 0) return;
+    initiatedRef.current = true;
+    trackInitiateCheckout({
+      value: total,
+      numItems: items.reduce((sum, item) => sum + item.quantity, 0),
+      contents: items.map((item) => ({
+        id: item.productId,
+        quantity: item.quantity,
+        item_price: item.price,
+      })),
+    });
+  }, [items, total]);
+
+  function markPurchasePaid(transactionId: string) {
+    if (purchaseTrackedRef.current === transactionId) {
+      setPaid(true);
+      clear();
+      return;
+    }
+    purchaseTrackedRef.current = transactionId;
+    trackPurchase({
+      value: total,
+      numItems: items.reduce((sum, item) => sum + item.quantity, 0),
+      contents: items.map((item) => ({
+        id: item.productId,
+        quantity: item.quantity,
+        item_price: item.price,
+      })),
+      transactionId,
+    });
+    setPaid(true);
+    clear();
+  }
 
   useEffect(() => {
     if (!payment) {
@@ -150,8 +192,7 @@ export default function CheckoutPage() {
       const res = await fetch(`/api/payment/status/${payment.transactionId}`);
       const data = await res.json();
       if (data.success && data.data.status === "PAID") {
-        setPaid(true);
-        clear();
+        markPurchasePaid(payment.transactionId);
         return;
       }
       if (!opts?.silent) {
@@ -219,6 +260,10 @@ export default function CheckoutPage() {
         qrCode: pd.qrCode,
         qrCodeBase64: pd.qrCodeBase64,
         copyPaste: pd.copyPaste || pd.qrCode,
+      });
+      trackAddPaymentInfo({
+        value: total,
+        numItems: items.reduce((sum, item) => sum + item.quantity, 0),
       });
     } catch {
       setError("Não foi possível conectar. Tente novamente.");
