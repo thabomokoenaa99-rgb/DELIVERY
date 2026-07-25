@@ -76,12 +76,24 @@ export function ProductConfigurator({ product }: Props) {
   const [drink, setDrink] = useState<string[]>([]);
   const [note, setNote] = useState("");
 
+  const isSimple = Boolean(product.simple);
+  const hasDiscount =
+    typeof product.priceFrom === "number" && product.priceFrom > product.price;
+
   const ready = useMemo(() => {
+    if (isSimple) return true;
     const pizzasOk =
       pizza1.length > 0 && (product.pizzaCount < 2 || pizza2.length > 0);
     const drinksOk = drink.length >= Math.min(product.drinkCount, 1);
     return pizzasOk && drinksOk;
-  }, [pizza1, pizza2, drink, product.pizzaCount, product.drinkCount]);
+  }, [
+    isSimple,
+    pizza1,
+    pizza2,
+    drink,
+    product.pizzaCount,
+    product.drinkCount,
+  ]);
 
   function toggle(
     list: string[],
@@ -95,17 +107,22 @@ export function ProductConfigurator({ product }: Props) {
 
   function finish() {
     if (!ready) return;
-    const details = [
-      `Pizza 1: ${getOptionLabel(flavors, pizza1)}`,
-      product.pizzaCount > 1
-        ? `Pizza 2: ${getOptionLabel(flavors, pizza2)}`
-        : null,
-      border.length ? `Borda: ${getOptionLabel(borders, border)}` : null,
-      `Bebida: ${getOptionLabel(drinks, drink)}`,
-      note ? `Obs: ${note}` : null,
-    ]
-      .filter(Boolean)
-      .join(" | ");
+
+    const details = isSimple
+      ? [product.subtitle, note ? `Obs: ${note}` : null]
+          .filter(Boolean)
+          .join(" | ")
+      : [
+          `Pizza 1: ${getOptionLabel(flavors, pizza1)}`,
+          product.pizzaCount > 1
+            ? `Pizza 2: ${getOptionLabel(flavors, pizza2)}`
+            : null,
+          border.length ? `Borda: ${getOptionLabel(borders, border)}` : null,
+          `Bebida: ${getOptionLabel(drinks, drink)}`,
+          note ? `Obs: ${note}` : null,
+        ]
+          .filter(Boolean)
+          .join(" | ");
 
     addItem({
       productId: product.id,
@@ -127,10 +144,16 @@ export function ProductConfigurator({ product }: Props) {
         <img src={product.image} alt={product.title} />
         <h2>{product.title}</h2>
         <p>{product.subtitle}</p>
-        <p className="price-line">
-          de <span className="price-from">{formatBRL(product.priceFrom)}</span> por{" "}
-          <b className="price-pill">{formatBRL(product.price)}</b>
-        </p>
+        {hasDiscount ? (
+          <p className="price-line">
+            de <span className="price-from">{formatBRL(product.priceFrom!)}</span>{" "}
+            por <b className="price-pill">{formatBRL(product.price)}</b>
+          </p>
+        ) : (
+          <p className="price-line">
+            <b className="price-pill">{formatBRL(product.price)}</b>
+          </p>
+        )}
         {product.stock != null && (
           <p className="stock-inline">
             🔥 Apenas {product.stock} combo(s) com esse preço especial
@@ -138,45 +161,60 @@ export function ProductConfigurator({ product }: Props) {
         )}
       </div>
 
-      <OptionGroup
-        title="Primeira Pizza — Meio a Meio:"
-        hint="Escolha até 2 opções"
-        max={2}
-        options={flavors}
-        selected={pizza1}
-        onToggle={(id) => toggle(pizza1, setPizza1, id, 2)}
-      />
+      {!isSimple && (
+        <>
+          <OptionGroup
+            title="Primeira Pizza — Meio a Meio:"
+            hint="Escolha até 2 opções"
+            max={2}
+            options={flavors}
+            selected={pizza1}
+            onToggle={(id) => toggle(pizza1, setPizza1, id, 2)}
+          />
 
-      {product.pizzaCount > 1 && (
-        <OptionGroup
-          title="Segunda Pizza — Meio a Meio:"
-          hint="Escolha até 2 opções"
-          max={2}
-          options={flavors}
-          selected={pizza2}
-          onToggle={(id) => toggle(pizza2, setPizza2, id, 2)}
-        />
+          {product.pizzaCount > 1 && (
+            <OptionGroup
+              title="Segunda Pizza — Meio a Meio:"
+              hint="Escolha até 2 opções"
+              max={2}
+              options={flavors}
+              selected={pizza2}
+              onToggle={(id) => toggle(pizza2, setPizza2, id, 2)}
+            />
+          )}
+
+          {product.borderMax > 0 && (
+            <OptionGroup
+              title="Borda Recheada:"
+              hint={`Escolha até ${product.borderMax} opções`}
+              max={product.borderMax}
+              options={borders}
+              selected={border}
+              onToggle={(id) =>
+                toggle(border, setBorder, id, product.borderMax)
+              }
+            />
+          )}
+
+          {product.drinkCount > 0 && (
+            <OptionGroup
+              title="Escolha seu refrigerante:"
+              hint={`Escolha até ${Math.min(product.drinkCount, 1)} opção`}
+              max={Math.min(product.drinkCount, 1) || 1}
+              options={drinks}
+              selected={drink}
+              onToggle={(id) =>
+                toggle(
+                  drink,
+                  setDrink,
+                  id,
+                  Math.min(product.drinkCount, 1) || 1,
+                )
+              }
+            />
+          )}
+        </>
       )}
-
-      <OptionGroup
-        title="Borda Recheada:"
-        hint={`Escolha até ${product.borderMax} opções`}
-        max={product.borderMax}
-        options={borders}
-        selected={border}
-        onToggle={(id) => toggle(border, setBorder, id, product.borderMax)}
-      />
-
-      <OptionGroup
-        title="Escolha seu refrigerante:"
-        hint={`Escolha até ${Math.min(product.drinkCount, 1)} opção`}
-        max={Math.min(product.drinkCount, 1) || 1}
-        options={drinks}
-        selected={drink}
-        onToggle={(id) =>
-          toggle(drink, setDrink, id, Math.min(product.drinkCount, 1) || 1)
-        }
-      />
 
       <label className="note-field">
         Adicionar algum detalhe?

@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { brazilianStates, citiesByState } from "@/data/store";
+import { citiesByState } from "@/data/store";
 
 type Location = {
   state: string;
@@ -17,7 +17,7 @@ type Location = {
 };
 
 type LocationContextValue = {
-  location: Location | null;
+  location: Location;
   setLocation: (location: Location) => void;
   displayCity: string;
   displayState: string;
@@ -25,68 +25,114 @@ type LocationContextValue = {
 
 const STORAGE_KEY = "bellanapoli-location";
 
+const DEFAULT_LOCATION: Location = {
+  state: "SP",
+  stateLabel: "São Paulo",
+  city: "São Paulo",
+};
+
 const LocationContext = createContext<LocationContextValue | null>(null);
 
-async function detectLocationByIp(): Promise<Location | null> {
+function normalizeLocation(raw: Partial<Location> | null): Location {
+  const city = raw?.city?.trim() || DEFAULT_LOCATION.city;
+  const state = raw?.state?.trim().toUpperCase() || DEFAULT_LOCATION.state;
+  const stateLabel = raw?.stateLabel?.trim() || DEFAULT_LOCATION.stateLabel;
+
+  return { state, stateLabel, city };
+}
+
+function readStoredLocation(): Location | null {
+  if (typeof window === "undefined") return null;
   try {
-    const res = await fetch("https://ipapi.co/json/");
-    if (!res.ok) return null;
-    const data = (await res.json()) as {
-      region_code?: string;
-      city?: string;
-      region?: string;
-    };
-    if (!data.region_code || !data.city) return null;
-    const stateLabel =
-      brazilianStates.find((s) => s.value === data.region_code)?.label ??
-      data.region ??
-      data.region_code;
-    return {
-      state: data.region_code,
-      stateLabel,
-      city: data.city,
-    };
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return null;
+    return normalizeLocation(JSON.parse(saved) as Partial<Location>);
   } catch {
+    localStorage.removeItem(STORAGE_KEY);
     return null;
   }
 }
 
-export function LocationProvider({ children }: { children: ReactNode }) {
-  const [location, setLocationState] = useState<Location | null>(null);
+function persistLocation(location: Location) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(location));
+}
 
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setLocationState(JSON.parse(saved) as Location);
-        return;
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
+async function fetchCityFromApi(lat?: number, lon?: number): Promise<Location> {
+  try {
+    const qs =
+      lat != null && lon != null
+        ? `?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`
+        : "";
+    const res = await fetch(`/api/location/city${qs}`, { cache: "no-store" });
+    if (!res.ok) return DEFAULT_LOCATION;
+    const data = (await res.json()) as Partial<Location>;
+    return normalizeLocation(data);
+  } catch {
+    return DEFAULT_LOCATION;
+  }
+}
+
+function detectCityViaGeolocation(): Promise<Location> {
+  return new Promise((resolve) => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      void fetchCityFromApi().then(resolve);
+      return;
     }
 
-    detectLocationByIp().then((detected) => {
-      if (detected) {
-        setLocationState(detected);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(detected));
-      }
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        resolve(
+          await fetchCityFromApi(
+            position.coords.latitude,
+            position.coords.longitude,
+          ),
+        );
+      },
+      async () => {
+        resolve(await fetchCityFromApi());
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 8_000,
+        maximumAge: 10 * 60 * 1000,
+      },
+    );
+  });
+}
+
+export function LocationProvider({ children }: { children: ReactNode }) {
+  const [location, setLocationState] = useState<Location>(DEFAULT_LOCATION);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const stored = readStoredLocation();
+    if (stored) {
+      setLocationState(stored);
+    }
+    setHydrated(true);
+
+    // Sempre tenta detectar de novo (IP/GPS) — sem modal manual
+    detectCityViaGeolocation().then((detected) => {
+      const next = normalizeLocation(detected);
+      setLocationState(next);
+      persistLocation(next);
     });
   }, []);
 
   const value = useMemo<LocationContextValue>(() => {
-    const displayCity = location?.city ?? "Sua Região";
-    const displayState = location?.state ?? "UF";
+    const current = hydrated ? location : DEFAULT_LOCATION;
 
     return {
-      location,
-      displayCity,
-      displayState,
+      location: current,
+      displayCity: current.city,
+      displayState: current.state,
       setLocation: (next) => {
-        setLocationState(next);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        const normalized = normalizeLocation(next);
+        setLocationState(normalized);
+        persistLocation(normalized);
       },
     };
-  }, [location]);
+  }, [location, hydrated]);
 
   return (
     <LocationContext.Provider value={value}>{children}</LocationContext.Provider>

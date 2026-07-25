@@ -1,12 +1,9 @@
 "use client";
 
-"use client";
-
 import Link from "next/link";
 import { CookieConsent } from "@/components/CookieConsent";
 import { Countdown } from "@/components/Countdown";
 import { InfoPanel } from "@/components/InfoPanel";
-import { LocationModal } from "@/components/LocationModal";
 import { ProductCard } from "@/components/ProductCard";
 import { ReviewsSection } from "@/components/ReviewsSection";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -16,7 +13,8 @@ import { useLocation } from "@/lib/location";
 
 export default function HomePage() {
   const { displayCity } = useLocation();
-  const [p1, p2, p3, p4, p5] = products;
+  const combos = products.filter((p) => p.category === "pizza");
+  const desserts = products.filter((p) => p.category === "sobremesa");
 
   return (
     <>
@@ -28,26 +26,35 @@ export default function HomePage() {
             <b>Entrega Grátis</b> para <b>{displayCity}</b>!
           </div>
           <div className="alert alert-promo">
-            Aproveite nossa <b>promoção com preços irresistíveis</b> igual Pizza 💜
+            Aproveite nossa <b>promoção com preços irresistíveis</b> igual Pizza
+            💜
           </div>
 
           <section id="pague-1-leve-2" className="categoria">
             <h2>Pague 1, Leve 2</h2>
-            <ProductCard product={p1} />
-            <ProductCard product={p2} />
-            <ProductCard product={p3} />
+            {combos.slice(0, 3).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
             <Countdown />
-            <ProductCard product={p4} />
-            <ProductCard product={p5} />
+            {combos.slice(3).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
             <Countdown />
+          </section>
+
+          <section id="sobremesa" className="categoria">
+            <h2>Sobremesa — Pizzas Doces</h2>
+            {desserts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </section>
 
           <ReviewsSection />
 
           <div className="countdown-alert" style={{ padding: "20px 10px" }}>
             <Countdown />
-            <Link href="/#pague-1-leve-2" className="cta-secondary">
-              Clique Para Ver Açaís em Promoção 💜
+            <Link href="/#sobremesa" className="cta-secondary">
+              Clique Para Ver Pizzas Doces 💜
             </Link>
           </div>
         </div>
@@ -55,7 +62,6 @@ export default function HomePage() {
 
       <InfoPanel />
       <SiteFooter />
-      <LocationModal />
       <CookieConsent />
     </>
   );

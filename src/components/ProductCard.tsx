@@ -8,6 +8,9 @@ type Props = {
 };
 
 export function ProductCard({ product }: Props) {
+  const hasDiscount =
+    typeof product.priceFrom === "number" && product.priceFrom > product.price;
+
   return (
     <div className="product-item">
       <Link
@@ -23,16 +26,28 @@ export function ProductCard({ product }: Props) {
           <h3>{product.title}</h3>
           <span className="subtitle">{product.subtitle}</span>
           {product.note && <span className="note-chip">{product.note}</span>}
-          <p className="price-line">
-            de <span className="price-from">{formatBRL(product.priceFrom)}</span> por
-          </p>
-          <span className={`price ${product.featured ? "price-highlight" : ""}`}>
-            {product.featured ? (
-              <b className="price-pill">{formatBRL(product.price)}</b>
-            ) : (
-              formatBRL(product.price)
-            )}
-          </span>
+          {hasDiscount ? (
+            <>
+              <p className="price-line">
+                de{" "}
+                <span className="price-from">
+                  {formatBRL(product.priceFrom!)}
+                </span>{" "}
+                por
+              </p>
+              <span
+                className={`price ${product.featured ? "price-highlight" : ""}`}
+              >
+                {product.featured ? (
+                  <b className="price-pill">{formatBRL(product.price)}</b>
+                ) : (
+                  formatBRL(product.price)
+                )}
+              </span>
+            </>
+          ) : (
+            <span className="price">{formatBRL(product.price)}</span>
+          )}
           {product.highlight && (
             <span className="highlight">
               <i>{product.highlight}</i>

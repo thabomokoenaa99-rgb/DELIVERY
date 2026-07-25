@@ -43,16 +43,24 @@ const emptyForm: FormData = {
 
 export default function CheckoutPage() {
   const { items, total, removeItem, clear } = useCart();
-  const { displayCity, location } = useLocation();
+  const { displayCity, displayState } = useLocation();
   const [form, setForm] = useState<FormData>({
     ...emptyForm,
-    city: displayCity !== "Sua Região" ? displayCity : storeConfig.neighborhood,
-    state: location?.state ?? storeConfig.state,
+    city: displayCity,
+    state: displayState,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [payment, setPayment] = useState<PaymentResult | null>(null);
   const [paid, setPaid] = useState(false);
+
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      city: displayCity,
+      state: displayState,
+    }));
+  }, [displayCity, displayState]);
 
   useEffect(() => {
     if (!payment?.transactionId || paid) return;

@@ -10,7 +10,7 @@ export type Product = {
   category: string;
   title: string;
   subtitle: string;
-  priceFrom: number;
+  priceFrom?: number;
   price: number;
   featured?: boolean;
   badge?: string;
@@ -18,6 +18,8 @@ export type Product = {
   stock?: number;
   highlight?: string;
   image: string;
+  /** Combo: choose flavors/drinks. Simple: add-to-cart only (ex: pizza doce). */
+  simple?: boolean;
   pizzaCount: number;
   drinkCount: number;
   borderMax: number;
@@ -230,6 +232,110 @@ export const products: Product[] = [
     pizzaCount: 2,
     drinkCount: 2,
     borderMax: 2,
+  },
+  {
+    id: "d1",
+    slug: "banana",
+    category: "sobremesa",
+    title: "Banana",
+    subtitle: "Pizza doce de banana",
+    price: 22,
+    image: "/images/pizza.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "d2",
+    slug: "banana-com-chocolate",
+    category: "sobremesa",
+    title: "Banana com Chocolate",
+    subtitle: "Banana com cobertura de chocolate",
+    price: 22,
+    image: "/images/pizza.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "d3",
+    slug: "brigadeiro",
+    category: "sobremesa",
+    title: "Brigadeiro",
+    subtitle: "Chocolate com granulado",
+    price: 22,
+    image: "/images/pizza.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "d4",
+    slug: "california",
+    category: "sobremesa",
+    title: "Califórnia",
+    subtitle: "Presunto com pêssego, figo, abacaxi e mussarela",
+    price: 29,
+    image: "/images/pizza.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "d5",
+    slug: "chocolate-com-cereja",
+    category: "sobremesa",
+    title: "Chocolate com Cereja",
+    subtitle: "Chocolate com cerejas",
+    price: 29,
+    image: "/images/pizza.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "d6",
+    slug: "chocolate-com-morango",
+    category: "sobremesa",
+    title: "Chocolate com Morango",
+    subtitle: "Chocolate com granulado e morango fresco",
+    price: 29,
+    image: "/images/chocolate-com-morango.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "d7",
+    slug: "churros",
+    category: "sobremesa",
+    title: "Churros",
+    subtitle: "Doce de leite, açúcar e canela",
+    price: 29,
+    image: "/images/pizza.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "d8",
+    slug: "festa",
+    category: "sobremesa",
+    title: "Festa",
+    subtitle: "Chocolate branco e granulado multicores",
+    price: 24,
+    image: "/images/pizza.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
   },
 ];
 

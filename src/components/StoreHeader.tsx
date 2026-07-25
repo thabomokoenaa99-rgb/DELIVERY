@@ -80,6 +80,7 @@ export function StoreHeader() {
             <Link href="/#pague-1-leve-2">
               Pague 1, Leve 2 Pizza + 1 Refrigerante 2 Litros
             </Link>
+            <Link href="/#sobremesa">Sobremesa — Pizzas Doces</Link>
           </div>
         </div>
       </div>
