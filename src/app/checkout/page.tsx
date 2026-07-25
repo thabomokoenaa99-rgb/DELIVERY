@@ -237,14 +237,6 @@ export default function CheckoutPage() {
   if (paid) {
     return (
       <div className="checkout-page">
-        <div className="checkout-brand">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/logo.png"
-            alt={storeConfig.name}
-            className="checkout-logo"
-          />
-        </div>
         <div className="payment-success">
           <h1>Pagamento confirmado!</h1>
           <p>Seu pedido foi recebido e já está sendo preparado.</p>
@@ -261,15 +253,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="checkout-page">
-      <div className="checkout-brand">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/logo.png"
-          alt={storeConfig.name}
-          className="checkout-logo"
-        />
-      </div>
-
       <Link href="/" className="back-link">
         VOLTAR
       </Link>

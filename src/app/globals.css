@@ -773,18 +773,6 @@ a {
   margin-top: -8px;
 }
 
-.checkout-brand {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 12px;
-}
-
-.checkout-logo {
-  width: min(220px, 70vw);
-  height: auto;
-  object-fit: contain;
-}
-
 .delivery-eta {
   margin: 8px 0 0;
   font-size: 14px;
