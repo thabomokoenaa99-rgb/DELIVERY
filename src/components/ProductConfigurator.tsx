@@ -85,6 +85,13 @@ export function ProductConfigurator({ product }: Props) {
   const [note, setNote] = useState("");
   const [flavorQuery, setFlavorQuery] = useState("");
   const pizza2Ref = useRef<HTMLElement>(null);
+  const borderRef = useRef<HTMLElement>(null);
+
+  function scrollTo(el: HTMLElement | null) {
+    requestAnimationFrame(() =>
+      el?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  }
 
   const savoryFlavors = useMemo(() => {
     const q = flavorQuery.trim().toLowerCase();
@@ -211,14 +218,7 @@ export function ProductConfigurator({ product }: Props) {
             onToggle={(id) => {
               const addingFirst = !pizza1.includes(id) && pizza1.length === 0;
               toggle(pizza1, setPizza1, id, 2);
-              if (addingFirst && product.pizzaCount > 1) {
-                requestAnimationFrame(() =>
-                  pizza2Ref.current?.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  }),
-                );
-              }
+              if (addingFirst && product.pizzaCount > 1) scrollTo(pizza2Ref.current);
             }}
           />
 
@@ -231,17 +231,23 @@ export function ProductConfigurator({ product }: Props) {
               options={savoryFlavors}
               selected={pizza2}
               strong
-              onToggle={(id) => toggle(pizza2, setPizza2, id, 2)}
+              onToggle={(id) => {
+                const addingFirst = !pizza2.includes(id) && pizza2.length === 0;
+                toggle(pizza2, setPizza2, id, 2);
+                if (addingFirst && product.borderMax > 0) scrollTo(borderRef.current);
+              }}
             />
           )}
 
           {product.borderMax > 0 && (
             <OptionGroup
+              ref={borderRef}
               title="Borda Recheada:"
               hint={`Escolha até ${product.borderMax} opções`}
               max={product.borderMax}
               options={borders}
               selected={border}
+              strong
               onToggle={(id) =>
                 toggle(border, setBorder, id, product.borderMax)
               }
