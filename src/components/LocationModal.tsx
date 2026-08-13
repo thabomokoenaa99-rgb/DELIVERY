@@ -41,7 +41,7 @@ export function LocationModal() {
   function nextFromState() {
     if (!state) return;
     const list = citiesByState[state] ?? [];
-    setCity(list.includes(city) ? city : list[0] ?? city || "Capital");
+    setCity(list.includes(city) ? city : list[0] ?? city ?? "Capital");
     setStep("city");
   }
 
