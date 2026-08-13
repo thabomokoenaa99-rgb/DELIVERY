@@ -776,6 +776,22 @@ button.product-link {
   font-size: 16px;
 }
 
+.option-group-strong {
+  scroll-margin-top: 12px;
+}
+
+.option-group-strong h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--brand);
+}
+
+.option-group-strong .option-hint {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
 .option-hint {
   margin: 0 0 10px;
   font-size: 13px;

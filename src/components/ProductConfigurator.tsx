@@ -2,7 +2,7 @@
 
 import { useCart } from "@/lib/cart";
 import { trackViewContent } from "@/lib/meta-pixel";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { individualFlavors } from "@/data/individual-flavors";
@@ -23,6 +23,8 @@ function OptionGroup({
   options,
   selected,
   onToggle,
+  strong,
+  ref,
 }: {
   title: string;
   hint: string;
@@ -30,9 +32,14 @@ function OptionGroup({
   options: { id: string; name: string; description: string }[];
   selected: string[];
   onToggle: (id: string) => void;
+  strong?: boolean;
+  ref?: React.Ref<HTMLElement>;
 }) {
   return (
-    <section className="option-group">
+    <section
+      ref={ref}
+      className={`option-group${strong ? " option-group-strong" : ""}`}
+    >
       <h3>{title}</h3>
       <p className="option-hint">
         {hint}{" "}
@@ -77,6 +84,7 @@ export function ProductConfigurator({ product }: Props) {
   const [drink, setDrink] = useState<string[]>([]);
   const [note, setNote] = useState("");
   const [flavorQuery, setFlavorQuery] = useState("");
+  const pizza2Ref = useRef<HTMLElement>(null);
 
   const savoryFlavors = useMemo(() => {
     const q = flavorQuery.trim().toLowerCase();
@@ -199,16 +207,30 @@ export function ProductConfigurator({ product }: Props) {
             max={2}
             options={savoryFlavors}
             selected={pizza1}
-            onToggle={(id) => toggle(pizza1, setPizza1, id, 2)}
+            strong
+            onToggle={(id) => {
+              const addingFirst = !pizza1.includes(id) && pizza1.length === 0;
+              toggle(pizza1, setPizza1, id, 2);
+              if (addingFirst && product.pizzaCount > 1) {
+                requestAnimationFrame(() =>
+                  pizza2Ref.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  }),
+                );
+              }
+            }}
           />
 
           {product.pizzaCount > 1 && (
             <OptionGroup
+              ref={pizza2Ref}
               title="Segunda Pizza — Meio a Meio:"
               hint="Escolha até 2 opções"
               max={2}
               options={savoryFlavors}
               selected={pizza2}
+              strong
               onToggle={(id) => toggle(pizza2, setPizza2, id, 2)}
             />
           )}
