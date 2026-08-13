@@ -23,13 +23,13 @@ type StoredLocation = Location & { confirmed: boolean };
 type LocationContextValue = {
   location: Location | null;
   setLocation: (location: Location) => void;
+  acceptGps: () => Promise<boolean>;
   displayCity: string;
   displayState: string;
   address: string;
   distance: string;
   confirmed: boolean;
   detecting: boolean;
-  detected: Location | null;
   modalOpen: boolean;
   openModal: () => void;
   closeModal: () => void;
@@ -71,25 +71,23 @@ function persistConfirmed(location: Location) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
 
-async function fetchCityFromApi(lat?: number, lon?: number): Promise<Location> {
+async function fetchCityFromApi(lat: number, lon: number): Promise<Location | null> {
   try {
-    const qs =
-      lat != null && lon != null
-        ? `?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`
-        : "";
+    const qs = `?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
     const res = await fetch(`/api/location/city${qs}`, { cache: "no-store" });
-    if (!res.ok) return FALLBACK;
+    if (!res.ok) return null;
     const data = (await res.json()) as Partial<Location>;
+    if (!data.city?.trim()) return null;
     return normalizeLocation(data);
   } catch {
-    return FALLBACK;
+    return null;
   }
 }
 
-function detectCityViaGeolocation(): Promise<Location> {
+function detectCityViaGeolocation(): Promise<Location | null> {
   return new Promise((resolve) => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      void fetchCityFromApi().then(resolve);
+      resolve(null);
       return;
     }
 
@@ -102,13 +100,11 @@ function detectCityViaGeolocation(): Promise<Location> {
           ),
         );
       },
-      async () => {
-        resolve(await fetchCityFromApi());
-      },
+      () => resolve(null),
       {
-        enableHighAccuracy: false,
-        timeout: 8_000,
-        maximumAge: 10 * 60 * 1000,
+        enableHighAccuracy: true,
+        timeout: 20_000,
+        maximumAge: 0,
       },
     );
   });
@@ -117,9 +113,7 @@ function detectCityViaGeolocation(): Promise<Location> {
 export function LocationProvider({ children }: { children: ReactNode }) {
   const [location, setLocationState] = useState<Location | null>(null);
   const [confirmed, setConfirmed] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-  const [detecting, setDetecting] = useState(true);
-  const [detected, setDetected] = useState<Location | null>(null);
+  const [detecting, setDetecting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -131,26 +125,6 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     } else {
       setModalOpen(true);
     }
-    setHydrated(true);
-
-    let cancelled = false;
-    setDetecting(true);
-
-    detectCityViaGeolocation().then((result) => {
-      if (cancelled) return;
-      const next = normalizeLocation(result);
-      setDetected(next);
-      setDetecting(false);
-
-      // Sem confirmação ainda: pré-seleciona a detecção no modal
-      if (!readStored()) {
-        setLocationState(next);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
   const setLocation = useCallback((next: Location) => {
@@ -161,14 +135,25 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     setModalOpen(false);
   }, []);
 
+  const acceptGps = useCallback(async () => {
+    setDetecting(true);
+    try {
+      const result = await detectCityViaGeolocation();
+      if (!result) return false;
+      setLocation(result);
+      return true;
+    } finally {
+      setDetecting(false);
+    }
+  }, [setLocation]);
+
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => {
     if (confirmed) setModalOpen(false);
   }, [confirmed]);
 
   const value = useMemo<LocationContextValue>(() => {
-    const current =
-      location ?? detected ?? (hydrated ? FALLBACK : FALLBACK);
+    const current = location ?? FALLBACK;
     const presence = getStorePresence(
       current.city,
       current.state,
@@ -178,25 +163,24 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     return {
       location: confirmed ? current : location,
       setLocation,
-      displayCity: confirmed ? current.city : current.city,
-      displayState: confirmed ? current.state : current.state,
+      acceptGps,
+      displayCity: current.city,
+      displayState: current.state,
       address: presence.address,
       distance: presence.distance,
       confirmed,
       detecting,
-      detected,
       modalOpen,
       openModal,
       closeModal,
     };
   }, [
     location,
-    detected,
-    hydrated,
     confirmed,
     detecting,
     modalOpen,
     setLocation,
+    acceptGps,
     openModal,
     closeModal,
   ]);

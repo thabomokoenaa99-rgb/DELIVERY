@@ -1,19 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { CookieConsent } from "@/components/CookieConsent";
 import { Countdown } from "@/components/Countdown";
+import { FlavorModal } from "@/components/FlavorModal";
 import { InfoPanel } from "@/components/InfoPanel";
 import { ProductCard } from "@/components/ProductCard";
 import { ReviewsSection } from "@/components/ReviewsSection";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StoreHeader } from "@/components/StoreHeader";
-import { products } from "@/data/store";
+import { products, type Product } from "@/data/store";
 import { useLocation } from "@/lib/location";
 
 export default function HomePage() {
   const { displayCity } = useLocation();
+  const [flavorProduct, setFlavorProduct] = useState<Product | null>(null);
   const combos = products.filter((p) => p.category === "pizza");
+  const individuals = products.filter((p) => p.category === "individual");
   const desserts = products.filter((p) => p.category === "sobremesa");
 
   return (
@@ -42,10 +46,25 @@ export default function HomePage() {
             <Countdown />
           </section>
 
+          <section id="pizza-individual" className="categoria">
+            <h2>Pizza Individual</h2>
+            {individuals.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onOpen={() => setFlavorProduct(product)}
+              />
+            ))}
+          </section>
+
           <section id="sobremesa" className="categoria">
             <h2>Sobremesa — Pizzas Doces</h2>
             {desserts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onOpen={() => setFlavorProduct(product)}
+              />
             ))}
           </section>
 
@@ -60,6 +79,12 @@ export default function HomePage() {
         </div>
       </main>
 
+      {flavorProduct && (
+        <FlavorModal
+          product={flavorProduct}
+          onClose={() => setFlavorProduct(null)}
+        />
+      )}
       <InfoPanel />
       <SiteFooter />
       <CookieConsent />

@@ -69,24 +69,22 @@ function buildLocation(
   };
 }
 
-function clientIp(request: Request): string | null {
-  const headers = [
-    "cf-connecting-ip",
-    "x-real-ip",
-    "x-forwarded-for",
-    "x-vercel-forwarded-for",
-  ];
+function cityFromNominatim(a: Record<string, string | undefined>): string | null {
+  // município first — suburb/district are neighborhoods, not the city
+  return a.municipality ?? a.city ?? a.town ?? a.village ?? null;
+}
 
-  for (const name of headers) {
-    const raw = request.headers.get(name);
-    if (!raw) continue;
-    const ip = raw.split(",")[0]?.trim();
-    if (!ip) continue;
-    if (ip === "::1" || ip === "127.0.0.1") continue;
-    return ip;
-  }
+function stateCodeFromNominatim(
+  a: Record<string, string | undefined>,
+): string | null {
+  const iso = a["ISO3166-2-lvl4"];
+  if (iso && /^BR-[A-Z]{2}$/i.test(iso)) return iso.slice(3).toUpperCase();
 
-  return null;
+  return (
+    Object.entries(STATE_LABELS).find(
+      ([, label]) => label.toLowerCase() === (a.state ?? "").toLowerCase(),
+    )?.[0] ?? null
+  );
 }
 
 async function locationFromCoords(
@@ -98,6 +96,8 @@ async function locationFromCoords(
     url.searchParams.set("lat", String(lat));
     url.searchParams.set("lon", String(lon));
     url.searchParams.set("format", "json");
+    url.searchParams.set("addressdetails", "1");
+    url.searchParams.set("zoom", "10");
     url.searchParams.set("accept-language", "pt-BR");
 
     const res = await fetch(url.toString(), {
@@ -117,114 +117,25 @@ async function locationFromCoords(
     const a = data.address;
     if (!a) return null;
 
-    const city =
-      a.city ??
-      a.town ??
-      a.municipality ??
-      a.village ??
-      a.suburb ??
-      a.city_district ??
-      null;
-
-    const stateCode =
-      Object.entries(STATE_LABELS).find(
-        ([, label]) =>
-          label.toLowerCase() === (a.state ?? "").toLowerCase(),
-      )?.[0] ?? null;
-
-    return buildLocation(city, stateCode, a.state);
+    return buildLocation(cityFromNominatim(a), stateCodeFromNominatim(a), a.state);
   } catch {
     return null;
   }
-}
-
-async function locationFromIpWhoIs(
-  ip: string | null,
-): Promise<DetectedLocation | null> {
-  try {
-    const url = ip
-      ? `https://ipwho.is/${encodeURIComponent(ip)}`
-      : "https://ipwho.is/";
-
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
-
-    const data = (await res.json()) as {
-      success?: boolean;
-      city?: string;
-      region_code?: string;
-      region?: string;
-      country_code?: string;
-    };
-
-    if (data.success === false) return null;
-    if (data.country_code && data.country_code !== "BR") {
-      return buildLocation(data.city ?? DEFAULT.city, "SP", DEFAULT.stateLabel);
-    }
-
-    return buildLocation(data.city, data.region_code, data.region);
-  } catch {
-    return null;
-  }
-}
-
-async function locationFromIpApi(
-  ip: string | null,
-): Promise<DetectedLocation | null> {
-  try {
-    const url = ip
-      ? `https://ipapi.co/${encodeURIComponent(ip)}/json/`
-      : "https://ipapi.co/json/";
-
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
-
-    const data = (await res.json()) as {
-      city?: string;
-      region_code?: string;
-      region?: string;
-      country_code?: string;
-      error?: boolean;
-    };
-
-    if (data.error) return null;
-    if (data.country_code && data.country_code !== "BR") {
-      return buildLocation(data.city ?? DEFAULT.city, "SP", DEFAULT.stateLabel);
-    }
-
-    return buildLocation(data.city, data.region_code, data.region);
-  } catch {
-    return null;
-  }
-}
-
-async function locationFromIp(
-  request: Request,
-): Promise<DetectedLocation | null> {
-  const ip = clientIp(request);
-  return (
-    (await locationFromIpWhoIs(ip)) ?? (await locationFromIpApi(ip))
-  );
 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const latParam = searchParams.get("lat");
-  const lonParam = searchParams.get("lon");
+  const lat = Number(searchParams.get("lat"));
+  const lon = Number(searchParams.get("lon"));
 
-  let detected: DetectedLocation | null = null;
-
-  if (latParam && lonParam) {
-    const lat = Number(latParam);
-    const lon = Number(lonParam);
-    if (Number.isFinite(lat) && Number.isFinite(lon)) {
-      detected = await locationFromCoords(lat, lon);
-    }
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return NextResponse.json({ error: "coords_required" }, { status: 400 });
   }
 
+  const detected = await locationFromCoords(lat, lon);
   if (!detected) {
-    detected = await locationFromIp(request);
+    return NextResponse.json({ error: "not_found" }, { status: 422 });
   }
 
-  return NextResponse.json(detected ?? DEFAULT);
+  return NextResponse.json(detected);
 }

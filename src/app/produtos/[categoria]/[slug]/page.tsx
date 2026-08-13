@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { FlavorModal } from "@/components/FlavorModal";
 import { ProductConfigurator } from "@/components/ProductConfigurator";
 import { getProduct, products } from "@/data/store";
 
@@ -17,6 +18,10 @@ export default async function ProductPage({ params }: Props) {
   const { categoria, slug } = await params;
   const product = getProduct(categoria, slug);
   if (!product) notFound();
+
+  if (product.startingAt) {
+    return <FlavorModal product={product} />;
+  }
 
   return <ProductConfigurator product={product} />;
 }

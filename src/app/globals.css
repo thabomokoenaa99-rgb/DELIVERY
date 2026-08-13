@@ -266,6 +266,14 @@ a {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+button.product-link {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
 .product-link:hover {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
@@ -457,8 +465,22 @@ a {
   width: min(420px, 100%);
   background: #fff;
   border-radius: 12px;
-  padding: 24px 20px;
+  padding: 28px 20px 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.modal-card h2 {
+  margin: 0 28px 4px;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.modal-card .btn-primary,
+.modal-card .btn-secondary {
+  width: 100%;
 }
 
 .modal-close {
@@ -474,7 +496,7 @@ a {
 }
 
 .modal-detecting {
-  margin: 8px 0 4px;
+  margin: 12px 0 0;
   color: #555;
   font-size: 14px;
 }
@@ -482,15 +504,27 @@ a {
 .modal-detected {
   display: grid;
   gap: 10px;
-  margin: 8px 0 4px;
+  margin: 12px 0 0;
   font-size: 14px;
+}
+
+.modal-field {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.modal-field p {
+  margin: 0;
+  font-size: 14px;
+  color: #444;
 }
 
 .modal-divider {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 18px 0 12px;
+  margin: 16px 0;
   color: #888;
   font-size: 12px;
   text-transform: uppercase;
@@ -528,8 +562,8 @@ a {
 
 .modal-select {
   width: 100%;
-  margin: 12px 0 16px;
-  padding: 10px;
+  margin: 0;
+  padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   font: inherit;
@@ -561,9 +595,101 @@ a {
 }
 
 .modal-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
-  justify-content: center;
+}
+
+.flavor-modal {
+  width: min(480px, 100%);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  text-align: left;
+  overflow: hidden;
+}
+
+.flavor-modal-scroll {
+  overflow-y: auto;
+  padding: 16px 16px 8px;
+  flex: 1;
+}
+
+.flavor-modal-hero {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.flavor-modal-hero img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #eee;
+}
+
+.flavor-modal-hero h2 {
+  margin: 12px 0 4px;
+  font-size: 18px;
+  color: var(--brand);
+}
+
+.flavor-modal-hero p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.flavor-search {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 8px 0 12px;
+}
+
+.flavor-search input {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+  font-weight: 400;
+}
+
+.flavor-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+}
+
+.flavor-modal-footer span {
+  font-weight: 700;
+}
+
+.flavor-modal-footer button {
+  background: var(--brand-dark);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.flavor-modal-footer button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.flavor-modal .option-row em {
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
 }
 
 /* Cookie */
