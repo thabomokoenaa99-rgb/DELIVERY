@@ -51,51 +51,6 @@ export const storeConfig = {
   brandTan: "#a3968c",
 };
 
-export const flavors: Flavor[] = [
-  {
-    id: "calabresa",
-    name: "Calabresa",
-    description: "Molho de tomate, mussarela, calabresa e cebola.",
-  },
-  {
-    id: "mussarela",
-    name: "Mussarela",
-    description: "Molho de tomate e bastante queijo mussarela.",
-  },
-  {
-    id: "portuguesa",
-    name: "Portuguesa",
-    description:
-      "Molho de tomate, mussarela, presunto, ovo, cebola, pimentão e azeitona.",
-  },
-  {
-    id: "frango-catupiry",
-    name: "Frango com Catupiry",
-    description: "Frango desfiado temperado com catupiry.",
-  },
-  {
-    id: "pepperoni",
-    name: "Pepperoni",
-    description: "Molho de tomate, mussarela e pepperoni.",
-  },
-  {
-    id: "quatro-queijos",
-    name: "Quatro Queijos",
-    description:
-      "Mistura de queijos (mussarela, parmesão, provolone e gorgonzola).",
-  },
-  {
-    id: "marguerita",
-    name: "Marguerita",
-    description: "Molho de tomate, mussarela, tomate e manjericão fresco.",
-  },
-  {
-    id: "bacon",
-    name: "Bacon",
-    description: "Molho de tomate, mussarela e bastante bacon crocante.",
-  },
-];
-
 export const borders: Flavor[] = [
   {
     id: "catupiry",

@@ -5,10 +5,10 @@ import { trackViewContent } from "@/lib/meta-pixel";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { individualFlavors } from "@/data/individual-flavors";
 import {
   borders,
   drinks,
-  flavors,
   formatBRL,
   getOptionLabel,
   type Product,
@@ -76,6 +76,17 @@ export function ProductConfigurator({ product }: Props) {
   const [border, setBorder] = useState<string[]>([]);
   const [drink, setDrink] = useState<string[]>([]);
   const [note, setNote] = useState("");
+  const [flavorQuery, setFlavorQuery] = useState("");
+
+  const savoryFlavors = useMemo(() => {
+    const q = flavorQuery.trim().toLowerCase();
+    if (!q) return individualFlavors;
+    return individualFlavors.filter(
+      (f) =>
+        f.name.toLowerCase().includes(q) ||
+        f.description.toLowerCase().includes(q),
+    );
+  }, [flavorQuery]);
 
   const isSimple = Boolean(product.simple);
   const hasDiscount =
@@ -122,9 +133,9 @@ export function ProductConfigurator({ product }: Props) {
           .filter(Boolean)
           .join(" | ")
       : [
-          `Pizza 1: ${getOptionLabel(flavors, pizza1)}`,
+          `Pizza 1: ${getOptionLabel(individualFlavors, pizza1)}`,
           product.pizzaCount > 1
-            ? `Pizza 2: ${getOptionLabel(flavors, pizza2)}`
+            ? `Pizza 2: ${getOptionLabel(individualFlavors, pizza2)}`
             : null,
           border.length ? `Borda: ${getOptionLabel(borders, border)}` : null,
           `Bebida: ${getOptionLabel(drinks, drink)}`,
@@ -172,11 +183,21 @@ export function ProductConfigurator({ product }: Props) {
 
       {!isSimple && (
         <>
+          <label className="flavor-search">
+            Buscar sabor
+            <input
+              type="search"
+              value={flavorQuery}
+              onChange={(e) => setFlavorQuery(e.target.value)}
+              placeholder="Ex: calabresa, frango, quatro queijos"
+            />
+          </label>
+
           <OptionGroup
             title="Primeira Pizza — Meio a Meio:"
             hint="Escolha até 2 opções"
             max={2}
-            options={flavors}
+            options={savoryFlavors}
             selected={pizza1}
             onToggle={(id) => toggle(pizza1, setPizza1, id, 2)}
           />
@@ -186,7 +207,7 @@ export function ProductConfigurator({ product }: Props) {
               title="Segunda Pizza — Meio a Meio:"
               hint="Escolha até 2 opções"
               max={2}
-              options={flavors}
+              options={savoryFlavors}
               selected={pizza2}
               onToggle={(id) => toggle(pizza2, setPizza2, id, 2)}
             />
