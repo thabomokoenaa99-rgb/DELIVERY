@@ -1,4 +1,4 @@
-export const META_PIXEL_ID = "1482236880539488";
+export const META_PIXEL_ID = "1623748192690708";
 
 type FbqFunction = {
   (...args: unknown[]): void;
