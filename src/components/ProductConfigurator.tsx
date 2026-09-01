@@ -112,8 +112,9 @@ export function ProductConfigurator({ product }: Props) {
       contentId: product.id,
       contentName: product.title,
       value: product.price,
+      contentCategory: product.category,
     });
-  }, [product.id, product.title, product.price]);
+  }, [product.id, product.title, product.price, product.category]);
 
   const ready = useMemo(() => {
     if (isSimple) return true;

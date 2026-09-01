@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart";
+import { trackViewContent } from "@/lib/meta-pixel";
 import { dessertFlavors, dessertPreferences } from "@/data/dessert-flavors";
 import { individualFlavors } from "@/data/individual-flavors";
 import { formatBRL, type Product } from "@/data/store";
@@ -45,6 +46,15 @@ export function FlavorModal({ product, onClose }: Props) {
   const [prefId, setPrefId] = useState("");
   const [flavorIds, setFlavorIds] = useState<string[]>([]);
   const [note, setNote] = useState("");
+
+  useEffect(() => {
+    trackViewContent({
+      contentId: product.id,
+      contentName: product.title,
+      value: product.price,
+      contentCategory: product.category,
+    });
+  }, [product.id, product.title, product.price, product.category]);
 
   const flavors = useMemo(() => {
     const q = query.trim().toLowerCase();

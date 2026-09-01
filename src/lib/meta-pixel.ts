@@ -1,4 +1,7 @@
-export const META_PIXEL_ID = "1623748192690708";
+import { products } from "@/data/store";
+
+export const META_PIXEL_ID = "4301164050136283";
+export const META_PIXEL_CURRENCY = "BRL";
 
 type FbqFunction = {
   (...args: unknown[]): void;
@@ -22,8 +25,46 @@ export type PixelContent = {
   item_price: number;
 };
 
+export type PixelUserData = {
+  email: string;
+  phone: string;
+  name: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  document?: string;
+};
+
 function canTrack(): boolean {
   return typeof window !== "undefined" && typeof window.fbq === "function";
+}
+
+function money(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+function digits(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+function contentsPayload(contents: PixelContent[]) {
+  return contents.map((item) => ({
+    id: item.id,
+    quantity: item.quantity,
+    item_price: money(item.item_price),
+  }));
+}
+
+function categoryFor(contentId: string) {
+  return products.find((product) => product.id === contentId)?.category;
+}
+
+function sharedCategory(contents: PixelContent[]) {
+  const categories = contents.map((item) => categoryFor(item.id));
+  if (categories.length === 0 || categories.some((c) => c !== categories[0])) {
+    return undefined;
+  }
+  return categories[0];
 }
 
 export function trackPixel(
@@ -45,6 +86,35 @@ export function trackPixel(
   }
 }
 
+/** Advanced Matching — hashed automatically by the Meta Pixel. */
+export function setPixelUserData(user: PixelUserData) {
+  if (!canTrack()) return;
+  try {
+    const parts = user.name.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const phoneDigits = digits(user.phone);
+    const phone =
+      phoneDigits.length >= 10 && !phoneDigits.startsWith("55")
+        ? `55${phoneDigits}`
+        : phoneDigits;
+    const zip = digits(user.zipCode);
+    const document = user.document ? digits(user.document) : "";
+
+    window.fbq!("init", META_PIXEL_ID, {
+      em: user.email.trim().toLowerCase(),
+      ph: phone || undefined,
+      fn: parts[0],
+      ln: parts.length > 1 ? parts.slice(1).join(" ") : undefined,
+      ct: user.city.trim().toLowerCase() || undefined,
+      st: user.state.trim().toLowerCase() || undefined,
+      zp: zip || undefined,
+      country: "br",
+      external_id: document || undefined,
+    });
+  } catch {
+    /* pixel never breaks the app */
+  }
+}
+
 export function trackPageView() {
   trackPixel("PageView");
 }
@@ -53,13 +123,23 @@ export function trackViewContent(input: {
   contentId: string;
   contentName: string;
   value: number;
+  contentCategory?: string;
 }) {
+  const value = money(input.value);
   trackPixel("ViewContent", {
     content_ids: [input.contentId],
     content_name: input.contentName,
     content_type: "product",
-    value: input.value,
-    currency: "BRL",
+    content_category: input.contentCategory ?? categoryFor(input.contentId),
+    value,
+    currency: META_PIXEL_CURRENCY,
+    contents: [
+      {
+        id: input.contentId,
+        quantity: 1,
+        item_price: value,
+      },
+    ],
   });
 }
 
@@ -68,18 +148,23 @@ export function trackAddToCart(input: {
   contentName: string;
   value: number;
   quantity?: number;
+  contentCategory?: string;
 }) {
+  const quantity = input.quantity ?? 1;
+  const unitPrice = money(input.value);
   trackPixel("AddToCart", {
     content_ids: [input.contentId],
     content_name: input.contentName,
     content_type: "product",
-    value: input.value,
-    currency: "BRL",
+    content_category: input.contentCategory ?? categoryFor(input.contentId),
+    value: money(unitPrice * quantity),
+    currency: META_PIXEL_CURRENCY,
+    num_items: quantity,
     contents: [
       {
         id: input.contentId,
-        quantity: input.quantity ?? 1,
-        item_price: input.value,
+        quantity,
+        item_price: unitPrice,
       },
     ],
   });
@@ -91,11 +176,12 @@ export function trackInitiateCheckout(input: {
   contents: PixelContent[];
 }) {
   trackPixel("InitiateCheckout", {
-    value: input.value,
-    currency: "BRL",
+    value: money(input.value),
+    currency: META_PIXEL_CURRENCY,
     num_items: input.numItems,
     content_type: "product",
-    contents: input.contents,
+    content_category: sharedCategory(input.contents),
+    contents: contentsPayload(input.contents),
     content_ids: input.contents.map((c) => c.id),
   });
 }
@@ -103,12 +189,16 @@ export function trackInitiateCheckout(input: {
 export function trackAddPaymentInfo(input: {
   value: number;
   numItems: number;
+  contents: PixelContent[];
 }) {
   trackPixel("AddPaymentInfo", {
-    value: input.value,
-    currency: "BRL",
+    value: money(input.value),
+    currency: META_PIXEL_CURRENCY,
     num_items: input.numItems,
     content_type: "product",
+    content_category: sharedCategory(input.contents),
+    contents: contentsPayload(input.contents),
+    content_ids: input.contents.map((c) => c.id),
   });
 }
 
@@ -121,11 +211,12 @@ export function trackPurchase(input: {
   trackPixel(
     "Purchase",
     {
-      value: input.value,
-      currency: "BRL",
+      value: money(input.value),
+      currency: META_PIXEL_CURRENCY,
       num_items: input.numItems,
       content_type: "product",
-      contents: input.contents,
+      content_category: sharedCategory(input.contents),
+      contents: contentsPayload(input.contents),
       content_ids: input.contents.map((c) => c.id),
       order_id: input.transactionId,
     },

@@ -45,7 +45,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         trackAddToCart({
           contentId: item.productId,
           contentName: item.title,
-          value: item.price * quantity,
+          value: item.price,
           quantity,
         });
         setItems((prev) => [

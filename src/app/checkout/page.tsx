@@ -7,9 +7,11 @@ import { formatBRL, storeConfig } from "@/data/store";
 import { useCart } from "@/lib/cart";
 import { useLocation } from "@/lib/location";
 import {
+  setPixelUserData,
   trackAddPaymentInfo,
   trackInitiateCheckout,
   trackPurchase,
+  type PixelContent,
 } from "@/lib/meta-pixel";
 
 type PaymentResult = {
@@ -93,17 +95,25 @@ export default function CheckoutPage() {
     }));
   }, [displayCity, displayState]);
 
+  function pixelContents(): PixelContent[] {
+    return items.map((item) => ({
+      id: item.productId,
+      quantity: item.quantity,
+      item_price: item.price,
+    }));
+  }
+
+  function pixelNumItems() {
+    return items.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
   useEffect(() => {
     if (initiatedRef.current || items.length === 0) return;
     initiatedRef.current = true;
     trackInitiateCheckout({
       value: total,
-      numItems: items.reduce((sum, item) => sum + item.quantity, 0),
-      contents: items.map((item) => ({
-        id: item.productId,
-        quantity: item.quantity,
-        item_price: item.price,
-      })),
+      numItems: pixelNumItems(),
+      contents: pixelContents(),
     });
   }, [items, total]);
 
@@ -116,12 +126,8 @@ export default function CheckoutPage() {
     purchaseTrackedRef.current = transactionId;
     trackPurchase({
       value: total,
-      numItems: items.reduce((sum, item) => sum + item.quantity, 0),
-      contents: items.map((item) => ({
-        id: item.productId,
-        quantity: item.quantity,
-        item_price: item.price,
-      })),
+      numItems: pixelNumItems(),
+      contents: pixelContents(),
       transactionId,
     });
     setPaid(true);
@@ -261,9 +267,19 @@ export default function CheckoutPage() {
         qrCodeBase64: pd.qrCodeBase64,
         copyPaste: pd.copyPaste || pd.qrCode,
       });
+      setPixelUserData({
+        email: form.email,
+        phone: form.phone,
+        name: form.name,
+        city: form.city,
+        state: form.state,
+        zipCode: form.zipCode,
+        document: form.cpf,
+      });
       trackAddPaymentInfo({
         value: total,
-        numItems: items.reduce((sum, item) => sum + item.quantity, 0),
+        numItems: pixelNumItems(),
+        contents: pixelContents(),
       });
     } catch {
       setError("Não foi possível conectar. Tente novamente.");
