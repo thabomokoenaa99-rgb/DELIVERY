@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { formatBRL, storeConfig } from "@/data/store";
 import { useCart } from "@/lib/cart";
@@ -69,6 +70,7 @@ function toQrImageSrc(value?: string | null): string | null {
 }
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const { items, total, removeItem, clear } = useCart();
   const { displayCity, displayState } = useLocation();
   const [form, setForm] = useState<FormData>({
@@ -118,33 +120,31 @@ export default function CheckoutPage() {
   }, [items, total]);
 
   function markPurchasePaid(transactionId: string) {
-    if (purchaseTrackedRef.current === transactionId) {
-      setPaid(true);
-      clear();
-      return;
-    }
-    purchaseTrackedRef.current = transactionId;
-    const value = total;
-    const numItems = pixelNumItems();
-    const contents = pixelContents();
-    void setPixelUserData({
-      email: form.email,
-      phone: form.phone,
-      name: form.name,
-      city: form.city,
-      state: form.state,
-      zipCode: form.zipCode,
-      document: form.cpf,
-    }).then(() => {
-      trackPurchase({
-        value,
-        numItems,
-        contents,
-        transactionId,
+    if (purchaseTrackedRef.current !== transactionId) {
+      purchaseTrackedRef.current = transactionId;
+      const value = total;
+      const numItems = pixelNumItems();
+      const contents = pixelContents();
+      void setPixelUserData({
+        email: form.email,
+        phone: form.phone,
+        name: form.name,
+        city: form.city,
+        state: form.state,
+        zipCode: form.zipCode,
+        document: form.cpf,
+      }).then(() => {
+        trackPurchase({
+          value,
+          numItems,
+          contents,
+          transactionId,
+        });
       });
-    });
+    }
     setPaid(true);
     clear();
+    router.replace("/obrigado");
   }
 
   useEffect(() => {
@@ -306,23 +306,6 @@ export default function CheckoutPage() {
     await navigator.clipboard.writeText(payment.copyPaste);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }
-
-  if (paid) {
-    return (
-      <div className="checkout-page">
-        <div className="payment-success">
-          <h1>Pagamento confirmado!</h1>
-          <p>Seu pedido foi recebido e já está sendo preparado.</p>
-          <p className="delivery-eta">
-            Tempo estimado de entrega: <strong>entre 20 e 30 minutos</strong>
-          </p>
-          <Link href="/" className="btn-primary">
-            Voltar ao cardápio
-          </Link>
-        </div>
-      </div>
-    );
   }
 
   return (
