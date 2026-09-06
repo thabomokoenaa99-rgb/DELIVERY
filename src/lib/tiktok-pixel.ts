@@ -21,6 +21,63 @@ export type TikTokContent = {
   content_name: string;
 };
 
+type TikTokUser = {
+  email: string;
+  phone: string;
+  document?: string;
+};
+
+let lastUser: TikTokUser | undefined;
+
+function cookie(name: string) {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : undefined;
+}
+
+function clickIds() {
+  const fromUrl = new URLSearchParams(window.location.search).get("ttclid");
+  if (fromUrl) {
+    try {
+      sessionStorage.setItem("ttclid", fromUrl);
+    } catch {
+      /* ignore */
+    }
+  }
+  let stored: string | null = null;
+  try {
+    stored = sessionStorage.getItem("ttclid");
+  } catch {
+    /* ignore */
+  }
+  return {
+    ttclid: fromUrl || stored || cookie("ttclid") || undefined,
+    ttp: cookie("_ttp") || undefined,
+  };
+}
+
+function sendTikTokServer(payload: {
+  event: string;
+  event_id: string;
+  event_time: number;
+  contents: TikTokContent[];
+  value: number;
+  search_string?: string;
+}) {
+  if (typeof window === "undefined") return;
+  void fetch("/api/tiktok/event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...payload,
+      url: window.location.href,
+      user: { ...lastUser, ...clickIds() },
+    }),
+    keepalive: true,
+  }).catch(() => {
+    /* pixel never breaks the app */
+  });
+}
+
 function canTrack(): boolean {
   return typeof window !== "undefined" && typeof window.ttq?.track === "function";
 }
@@ -61,6 +118,7 @@ export async function identifyTikTok(user: {
   phone: string;
   document?: string;
 }) {
+  lastUser = user;
   if (typeof window === "undefined" || typeof window.ttq?.identify !== "function") {
     return;
   }
@@ -81,18 +139,71 @@ export async function identifyTikTok(user: {
 
 export function trackTikTok(
   event: string,
-  params: { contents: TikTokContent[]; value: number },
+  params: {
+    contents: TikTokContent[];
+    value: number;
+    search_string?: string;
+    event_id?: string;
+  },
 ) {
-  if (!canTrack()) return;
+  if (typeof window === "undefined") return;
+  const event_id = params.event_id ?? crypto.randomUUID();
+  const event_time = Math.floor(Date.now() / 1000);
+  const contents = params.contents;
+  const first = contents[0];
+  const payload: Record<string, unknown> = {
+    contents,
+    value: money(params.value),
+    currency: TIKTOK_PIXEL_CURRENCY,
+    content_id:
+      contents.length <= 1
+        ? first?.content_id
+        : contents.map((item) => item.content_id),
+    content_type: first?.content_type ?? "product",
+    content_name: contents
+      .map((item) => item.content_name)
+      .filter(Boolean)
+      .join(", "),
+    event_id,
+    event_time,
+    url: typeof window !== "undefined" ? window.location.href : undefined,
+  };
+  if (params.search_string) payload.search_string = params.search_string;
   try {
-    window.ttq!.track(event, {
-      contents: params.contents,
-      value: money(params.value),
-      currency: TIKTOK_PIXEL_CURRENCY,
-    });
+    if (canTrack()) window.ttq!.track(event, payload);
   } catch {
     /* pixel never breaks the app */
   }
+  sendTikTokServer({
+    event,
+    event_id,
+    event_time,
+    contents,
+    value: params.value,
+    search_string: params.search_string,
+  });
+}
+
+let searchTimer: ReturnType<typeof setTimeout> | undefined;
+
+export function trackTikTokSearch(input: {
+  search_string: string;
+  contentId: string;
+  contentName: string;
+  value: number;
+}) {
+  const search_string = input.search_string.trim();
+  clearTimeout(searchTimer);
+  if (search_string.length < 2) return;
+  searchTimer = setTimeout(() => {
+    trackTikTok("Search", {
+      contents: tiktokContents([
+        { id: input.contentId, name: input.contentName },
+      ]),
+      value: input.value,
+      search_string,
+    });
+  }, 600);
 }
 
 export function trackTikTokPage() {

@@ -253,5 +253,42 @@ export function trackPurchase(input: {
   trackTikTok("Purchase", {
     contents: tiktokContents(input.contents),
     value: input.value,
+    event_id: input.transactionId,
   });
+}
+
+const PENDING_PURCHASE_KEY = "pending-purchase";
+
+export type PendingPurchase = {
+  value: number;
+  numItems: number;
+  contents: PixelContent[];
+  transactionId: string;
+  user: PixelUserData;
+};
+
+export function stashPendingPurchase(data: PendingPurchase) {
+  try {
+    sessionStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(data));
+  } catch {
+    /* private mode / quota — still redirect */
+  }
+}
+
+export function consumePendingPurchase(): PendingPurchase | null {
+  try {
+    const raw = sessionStorage.getItem(PENDING_PURCHASE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as PendingPurchase;
+    const doneKey = `purchase-tracked:${data.transactionId}`;
+    if (!data.transactionId || sessionStorage.getItem(doneKey)) {
+      sessionStorage.removeItem(PENDING_PURCHASE_KEY);
+      return null;
+    }
+    sessionStorage.setItem(doneKey, "1");
+    sessionStorage.removeItem(PENDING_PURCHASE_KEY);
+    return data;
+  } catch {
+    return null;
+  }
 }

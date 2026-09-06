@@ -9,9 +9,9 @@ import { useCart } from "@/lib/cart";
 import { useLocation } from "@/lib/location";
 import {
   setPixelUserData,
+  stashPendingPurchase,
   trackAddPaymentInfo,
   trackInitiateCheckout,
-  trackPurchase,
   type PixelContent,
 } from "@/lib/meta-pixel";
 
@@ -122,24 +122,20 @@ export default function CheckoutPage() {
   function markPurchasePaid(transactionId: string) {
     if (purchaseTrackedRef.current !== transactionId) {
       purchaseTrackedRef.current = transactionId;
-      const value = total;
-      const numItems = pixelNumItems();
-      const contents = pixelContents();
-      void setPixelUserData({
-        email: form.email,
-        phone: form.phone,
-        name: form.name,
-        city: form.city,
-        state: form.state,
-        zipCode: form.zipCode,
-        document: form.cpf,
-      }).then(() => {
-        trackPurchase({
-          value,
-          numItems,
-          contents,
-          transactionId,
-        });
+      stashPendingPurchase({
+        value: total,
+        numItems: pixelNumItems(),
+        contents: pixelContents(),
+        transactionId,
+        user: {
+          email: form.email,
+          phone: form.phone,
+          name: form.name,
+          city: form.city,
+          state: form.state,
+          zipCode: form.zipCode,
+          document: form.cpf,
+        },
       });
     }
     setPaid(true);
