@@ -1,4 +1,10 @@
 import { products } from "@/data/store";
+import {
+  identifyTikTok,
+  tiktokContents,
+  trackTikTok,
+  trackTikTokPage,
+} from "@/lib/tiktok-pixel";
 
 export const META_PIXEL_ID = "4301164050136283";
 export const META_PIXEL_CURRENCY = "BRL";
@@ -88,35 +94,42 @@ export function trackPixel(
 
 /** Advanced Matching — hashed automatically by the Meta Pixel. */
 export function setPixelUserData(user: PixelUserData) {
-  if (!canTrack()) return;
   try {
-    const parts = user.name.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    const phoneDigits = digits(user.phone);
-    const phone =
-      phoneDigits.length >= 10 && !phoneDigits.startsWith("55")
-        ? `55${phoneDigits}`
-        : phoneDigits;
-    const zip = digits(user.zipCode);
-    const document = user.document ? digits(user.document) : "";
+    if (canTrack()) {
+      const parts = user.name.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      const phoneDigits = digits(user.phone);
+      const phone =
+        phoneDigits.length >= 10 && !phoneDigits.startsWith("55")
+          ? `55${phoneDigits}`
+          : phoneDigits;
+      const zip = digits(user.zipCode);
+      const document = user.document ? digits(user.document) : "";
 
-    window.fbq!("init", META_PIXEL_ID, {
-      em: user.email.trim().toLowerCase(),
-      ph: phone || undefined,
-      fn: parts[0],
-      ln: parts.length > 1 ? parts.slice(1).join(" ") : undefined,
-      ct: user.city.trim().toLowerCase() || undefined,
-      st: user.state.trim().toLowerCase() || undefined,
-      zp: zip || undefined,
-      country: "br",
-      external_id: document || undefined,
-    });
+      window.fbq!("init", META_PIXEL_ID, {
+        em: user.email.trim().toLowerCase(),
+        ph: phone || undefined,
+        fn: parts[0],
+        ln: parts.length > 1 ? parts.slice(1).join(" ") : undefined,
+        ct: user.city.trim().toLowerCase() || undefined,
+        st: user.state.trim().toLowerCase() || undefined,
+        zp: zip || undefined,
+        country: "br",
+        external_id: document || undefined,
+      });
+    }
   } catch {
     /* pixel never breaks the app */
   }
+  return identifyTikTok({
+    email: user.email,
+    phone: user.phone,
+    document: user.document,
+  });
 }
 
 export function trackPageView() {
   trackPixel("PageView");
+  trackTikTokPage();
 }
 
 export function trackViewContent(input: {
@@ -140,6 +153,10 @@ export function trackViewContent(input: {
         item_price: value,
       },
     ],
+  });
+  trackTikTok("ViewContent", {
+    contents: tiktokContents([{ id: input.contentId, name: input.contentName }]),
+    value,
   });
 }
 
@@ -168,6 +185,10 @@ export function trackAddToCart(input: {
       },
     ],
   });
+  trackTikTok("AddToCart", {
+    contents: tiktokContents([{ id: input.contentId, name: input.contentName }]),
+    value: money(unitPrice * quantity),
+  });
 }
 
 export function trackInitiateCheckout(input: {
@@ -183,6 +204,10 @@ export function trackInitiateCheckout(input: {
     content_category: sharedCategory(input.contents),
     contents: contentsPayload(input.contents),
     content_ids: input.contents.map((c) => c.id),
+  });
+  trackTikTok("InitiateCheckout", {
+    contents: tiktokContents(input.contents),
+    value: input.value,
   });
 }
 
@@ -200,6 +225,9 @@ export function trackAddPaymentInfo(input: {
     contents: contentsPayload(input.contents),
     content_ids: input.contents.map((c) => c.id),
   });
+  const contents = tiktokContents(input.contents);
+  trackTikTok("AddPaymentInfo", { contents, value: input.value });
+  trackTikTok("PlaceAnOrder", { contents, value: input.value });
 }
 
 export function trackPurchase(input: {
@@ -222,4 +250,8 @@ export function trackPurchase(input: {
     },
     { eventID: input.transactionId },
   );
+  trackTikTok("Purchase", {
+    contents: tiktokContents(input.contents),
+    value: input.value,
+  });
 }

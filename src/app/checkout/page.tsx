@@ -124,11 +124,24 @@ export default function CheckoutPage() {
       return;
     }
     purchaseTrackedRef.current = transactionId;
-    trackPurchase({
-      value: total,
-      numItems: pixelNumItems(),
-      contents: pixelContents(),
-      transactionId,
+    const value = total;
+    const numItems = pixelNumItems();
+    const contents = pixelContents();
+    void setPixelUserData({
+      email: form.email,
+      phone: form.phone,
+      name: form.name,
+      city: form.city,
+      state: form.state,
+      zipCode: form.zipCode,
+      document: form.cpf,
+    }).then(() => {
+      trackPurchase({
+        value,
+        numItems,
+        contents,
+        transactionId,
+      });
     });
     setPaid(true);
     clear();
@@ -267,7 +280,7 @@ export default function CheckoutPage() {
         qrCodeBase64: pd.qrCodeBase64,
         copyPaste: pd.copyPaste || pd.qrCode,
       });
-      setPixelUserData({
+      await setPixelUserData({
         email: form.email,
         phone: form.phone,
         name: form.name,
