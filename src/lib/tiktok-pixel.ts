@@ -5,7 +5,11 @@ export const TIKTOK_PIXEL_CURRENCY = "BRL";
 
 type Ttq = {
   identify: (data: Record<string, string>) => void;
-  track: (event: string, params?: Record<string, unknown>) => void;
+  track: (
+    event: string,
+    params?: Record<string, unknown>,
+    options?: { event_id?: string },
+  ) => void;
   page: () => void;
 };
 
@@ -19,6 +23,8 @@ export type TikTokContent = {
   content_id: string;
   content_type: string;
   content_name: string;
+  quantity?: number;
+  price?: number;
 };
 
 type TikTokUser = {
@@ -103,13 +109,21 @@ function e164Phone(phone: string): string {
 }
 
 export function tiktokContents(
-  items: { id: string; name?: string }[],
+  items: {
+    id: string;
+    name?: string;
+    quantity?: number;
+    price?: number;
+    item_price?: number;
+  }[],
 ): TikTokContent[] {
   return items.map((item) => ({
     content_id: item.id,
     content_type: "product",
     content_name:
       item.name ?? products.find((p) => p.id === item.id)?.title ?? item.id,
+    quantity: item.quantity ?? 1,
+    price: money(item.price ?? item.item_price ?? 0),
   }));
 }
 
@@ -151,7 +165,7 @@ export function trackTikTok(
   const event_time = Math.floor(Date.now() / 1000);
   const contents = params.contents;
   const first = contents[0];
-  const payload: Record<string, unknown> = {
+  const properties: Record<string, unknown> = {
     contents,
     value: money(params.value),
     currency: TIKTOK_PIXEL_CURRENCY,
@@ -164,13 +178,10 @@ export function trackTikTok(
       .map((item) => item.content_name)
       .filter(Boolean)
       .join(", "),
-    event_id,
-    event_time,
-    url: typeof window !== "undefined" ? window.location.href : undefined,
   };
-  if (params.search_string) payload.search_string = params.search_string;
+  if (params.search_string) properties.search_string = params.search_string;
   try {
-    if (canTrack()) window.ttq!.track(event, payload);
+    if (canTrack()) window.ttq!.track(event, properties, { event_id });
   } catch {
     /* pixel never breaks the app */
   }

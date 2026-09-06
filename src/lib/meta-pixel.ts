@@ -155,7 +155,9 @@ export function trackViewContent(input: {
     ],
   });
   trackTikTok("ViewContent", {
-    contents: tiktokContents([{ id: input.contentId, name: input.contentName }]),
+    contents: tiktokContents([
+      { id: input.contentId, name: input.contentName, price: value },
+    ]),
     value,
   });
 }
@@ -186,7 +188,14 @@ export function trackAddToCart(input: {
     ],
   });
   trackTikTok("AddToCart", {
-    contents: tiktokContents([{ id: input.contentId, name: input.contentName }]),
+    contents: tiktokContents([
+      {
+        id: input.contentId,
+        name: input.contentName,
+        quantity,
+        price: unitPrice,
+      },
+    ]),
     value: money(unitPrice * quantity),
   });
 }

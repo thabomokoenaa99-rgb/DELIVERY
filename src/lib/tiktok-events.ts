@@ -20,6 +20,8 @@ export type TikTokServerEvent = {
     content_id: string;
     content_type: string;
     content_name: string;
+    quantity?: number;
+    price?: number;
   }>;
   value?: number;
   search_string?: string;
