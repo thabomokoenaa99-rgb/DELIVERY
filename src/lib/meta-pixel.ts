@@ -6,7 +6,7 @@ import {
   trackTikTokPage,
 } from "@/lib/tiktok-pixel";
 
-export const META_PIXEL_ID = "1126611906370348";
+export const META_PIXEL_ID = "1029948996767397";
 export const META_PIXEL_CURRENCY = "BRL";
 
 type FbqFunction = {
