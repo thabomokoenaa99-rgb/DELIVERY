@@ -186,8 +186,15 @@ export function ProductConfigurator({ product }: Props) {
       </Link>
 
       <div className="product-hero">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={product.image} alt={product.title} />
+        <div className="product-hero-media">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={product.image}
+            alt={product.title}
+            width={1400}
+            height={1045}
+          />
+        </div>
         <h2>{product.title}</h2>
         <p>{product.subtitle}</p>
         {hasDiscount ? (
