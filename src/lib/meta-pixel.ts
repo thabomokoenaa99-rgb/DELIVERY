@@ -1,4 +1,10 @@
 import { products } from "@/data/store";
+import {
+  identifyTikTok,
+  tiktokContents,
+  trackTikTok,
+  trackTikTokPage,
+} from "@/lib/tiktok-pixel";
 
 export const META_PIXEL_ID = "1126611906370348";
 export const META_PIXEL_CURRENCY = "BRL";
@@ -88,35 +94,42 @@ export function trackPixel(
 
 /** Advanced Matching — hashed automatically by the Meta Pixel. */
 export function setPixelUserData(user: PixelUserData) {
-  if (!canTrack()) return;
   try {
-    const parts = user.name.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    const phoneDigits = digits(user.phone);
-    const phone =
-      phoneDigits.length >= 10 && !phoneDigits.startsWith("55")
-        ? `55${phoneDigits}`
-        : phoneDigits;
-    const zip = digits(user.zipCode);
-    const document = user.document ? digits(user.document) : "";
+    if (canTrack()) {
+      const parts = user.name.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      const phoneDigits = digits(user.phone);
+      const phone =
+        phoneDigits.length >= 10 && !phoneDigits.startsWith("55")
+          ? `55${phoneDigits}`
+          : phoneDigits;
+      const zip = digits(user.zipCode);
+      const document = user.document ? digits(user.document) : "";
 
-    window.fbq!("init", META_PIXEL_ID, {
-      em: user.email.trim().toLowerCase(),
-      ph: phone || undefined,
-      fn: parts[0],
-      ln: parts.length > 1 ? parts.slice(1).join(" ") : undefined,
-      ct: user.city.trim().toLowerCase() || undefined,
-      st: user.state.trim().toLowerCase() || undefined,
-      zp: zip || undefined,
-      country: "br",
-      external_id: document || undefined,
-    });
+      window.fbq!("init", META_PIXEL_ID, {
+        em: user.email.trim().toLowerCase(),
+        ph: phone || undefined,
+        fn: parts[0],
+        ln: parts.length > 1 ? parts.slice(1).join(" ") : undefined,
+        ct: user.city.trim().toLowerCase() || undefined,
+        st: user.state.trim().toLowerCase() || undefined,
+        zp: zip || undefined,
+        country: "br",
+        external_id: document || undefined,
+      });
+    }
   } catch {
     /* pixel never breaks the app */
   }
+  return identifyTikTok({
+    email: user.email,
+    phone: user.phone,
+    document: user.document,
+  });
 }
 
 export function trackPageView() {
   trackPixel("PageView");
+  trackTikTokPage();
 }
 
 export function trackViewContent(input: {
@@ -140,6 +153,12 @@ export function trackViewContent(input: {
         item_price: value,
       },
     ],
+  });
+  trackTikTok("ViewContent", {
+    contents: tiktokContents([
+      { id: input.contentId, name: input.contentName, price: value },
+    ]),
+    value,
   });
 }
 
@@ -168,6 +187,17 @@ export function trackAddToCart(input: {
       },
     ],
   });
+  trackTikTok("AddToCart", {
+    contents: tiktokContents([
+      {
+        id: input.contentId,
+        name: input.contentName,
+        quantity,
+        price: unitPrice,
+      },
+    ]),
+    value: money(unitPrice * quantity),
+  });
 }
 
 export function trackInitiateCheckout(input: {
@@ -183,6 +213,10 @@ export function trackInitiateCheckout(input: {
     content_category: sharedCategory(input.contents),
     contents: contentsPayload(input.contents),
     content_ids: input.contents.map((c) => c.id),
+  });
+  trackTikTok("InitiateCheckout", {
+    contents: tiktokContents(input.contents),
+    value: input.value,
   });
 }
 
@@ -200,16 +234,17 @@ export function trackAddPaymentInfo(input: {
     contents: contentsPayload(input.contents),
     content_ids: input.contents.map((c) => c.id),
   });
+  const contents = tiktokContents(input.contents);
+  trackTikTok("AddPaymentInfo", { contents, value: input.value });
+  trackTikTok("PlaceAnOrder", { contents, value: input.value });
 }
 
-export type PendingPurchase = {
+export function trackPurchase(input: {
   value: number;
   numItems: number;
   contents: PixelContent[];
   transactionId: string;
-};
-
-export function trackPurchase(input: PendingPurchase) {
+}) {
   trackPixel(
     "Purchase",
     {
@@ -224,27 +259,45 @@ export function trackPurchase(input: PendingPurchase) {
     },
     { eventID: input.transactionId },
   );
+  trackTikTok("Purchase", {
+    contents: tiktokContents(input.contents),
+    value: input.value,
+    event_id: input.transactionId,
+  });
 }
 
-const PENDING_PURCHASE_KEY = "meta-pending-purchase";
+const PENDING_PURCHASE_KEY = "pending-purchase";
 
-export function stashPendingPurchase(purchase: PendingPurchase) {
-  if (typeof window === "undefined") return;
-  sessionStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(purchase));
-}
+export type PendingPurchase = {
+  value: number;
+  numItems: number;
+  contents: PixelContent[];
+  transactionId: string;
+  user: PixelUserData;
+};
 
-/** Fires Purchase on the thank-you page, then clears the stash so refresh does not duplicate. */
-export function flushPendingPurchase(): PendingPurchase | null {
-  if (typeof window === "undefined") return null;
-  const raw = sessionStorage.getItem(PENDING_PURCHASE_KEY);
-  if (!raw) return null;
+export function stashPendingPurchase(data: PendingPurchase) {
   try {
-    const pending = JSON.parse(raw) as PendingPurchase;
-    trackPurchase(pending);
-    sessionStorage.removeItem(PENDING_PURCHASE_KEY);
-    return pending;
+    sessionStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(data));
   } catch {
+    /* private mode / quota — still redirect */
+  }
+}
+
+export function consumePendingPurchase(): PendingPurchase | null {
+  try {
+    const raw = sessionStorage.getItem(PENDING_PURCHASE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as PendingPurchase;
+    const doneKey = `purchase-tracked:${data.transactionId}`;
+    if (!data.transactionId || sessionStorage.getItem(doneKey)) {
+      sessionStorage.removeItem(PENDING_PURCHASE_KEY);
+      return null;
+    }
+    sessionStorage.setItem(doneKey, "1");
     sessionStorage.removeItem(PENDING_PURCHASE_KEY);
+    return data;
+  } catch {
     return null;
   }
 }

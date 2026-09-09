@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { trackViewContent } from "@/lib/meta-pixel";
+import { trackTikTokSearch } from "@/lib/tiktok-pixel";
 import { dessertFlavors, dessertPreferences } from "@/data/dessert-flavors";
 import { individualFlavors } from "@/data/individual-flavors";
 import { formatBRL, type Product } from "@/data/store";
@@ -55,6 +56,15 @@ export function FlavorModal({ product, onClose }: Props) {
       contentCategory: product.category,
     });
   }, [product.id, product.title, product.price, product.category]);
+
+  useEffect(() => {
+    trackTikTokSearch({
+      search_string: query,
+      contentId: product.id,
+      contentName: product.title,
+      value: product.price,
+    });
+  }, [query, product.id, product.title, product.price]);
 
   const flavors = useMemo(() => {
     const q = query.trim().toLowerCase();

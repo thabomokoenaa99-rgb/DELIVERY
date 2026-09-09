@@ -2,6 +2,7 @@
 
 import { useCart } from "@/lib/cart";
 import { trackViewContent } from "@/lib/meta-pixel";
+import { trackTikTokSearch } from "@/lib/tiktok-pixel";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -115,6 +116,15 @@ export function ProductConfigurator({ product }: Props) {
       contentCategory: product.category,
     });
   }, [product.id, product.title, product.price, product.category]);
+
+  useEffect(() => {
+    trackTikTokSearch({
+      search_string: flavorQuery,
+      contentId: product.id,
+      contentName: product.title,
+      value: product.price,
+    });
+  }, [flavorQuery, product.id, product.title, product.price]);
 
   const ready = useMemo(() => {
     if (isSimple) return true;

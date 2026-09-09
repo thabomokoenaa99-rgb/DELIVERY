@@ -84,6 +84,7 @@ export default function CheckoutPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [payment, setPayment] = useState<PaymentResult | null>(null);
   const [qrSrc, setQrSrc] = useState<string | null>(null);
+  const [paid, setPaid] = useState(false);
   const [copied, setCopied] = useState(false);
   const initiatedRef = useRef(false);
   const purchaseTrackedRef = useRef<string | null>(null);
@@ -119,16 +120,27 @@ export default function CheckoutPage() {
   }, [items, total]);
 
   function markPurchasePaid(transactionId: string) {
-    if (purchaseTrackedRef.current === transactionId) return;
-    purchaseTrackedRef.current = transactionId;
-    stashPendingPurchase({
-      value: total,
-      numItems: pixelNumItems(),
-      contents: pixelContents(),
-      transactionId,
-    });
+    if (purchaseTrackedRef.current !== transactionId) {
+      purchaseTrackedRef.current = transactionId;
+      stashPendingPurchase({
+        value: total,
+        numItems: pixelNumItems(),
+        contents: pixelContents(),
+        transactionId,
+        user: {
+          email: form.email,
+          phone: form.phone,
+          name: form.name,
+          city: form.city,
+          state: form.state,
+          zipCode: form.zipCode,
+          document: form.cpf,
+        },
+      });
+    }
+    setPaid(true);
     clear();
-    router.push("/obrigado");
+    router.replace("/obrigado");
   }
 
   useEffect(() => {
@@ -168,7 +180,7 @@ export default function CheckoutPage() {
   }, [payment]);
 
   useEffect(() => {
-    if (!payment?.transactionId) return;
+    if (!payment?.transactionId || paid) return;
 
     const interval = setInterval(() => {
       void checkPaymentStatus({ silent: true });
@@ -176,14 +188,14 @@ export default function CheckoutPage() {
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- polling only needs transaction id
-  }, [payment?.transactionId]);
+  }, [payment?.transactionId, paid]);
 
   function updateField(field: keyof FormData, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
   async function checkPaymentStatus(opts?: { silent?: boolean }) {
-    if (!payment?.transactionId || purchaseTrackedRef.current) return;
+    if (!payment?.transactionId || paid) return;
 
     if (!opts?.silent) {
       setChecking(true);
@@ -264,7 +276,7 @@ export default function CheckoutPage() {
         qrCodeBase64: pd.qrCodeBase64,
         copyPaste: pd.copyPaste || pd.qrCode,
       });
-      setPixelUserData({
+      await setPixelUserData({
         email: form.email,
         phone: form.phone,
         name: form.name,

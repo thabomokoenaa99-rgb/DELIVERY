@@ -2,23 +2,34 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { storeConfig } from "@/data/store";
-import { flushPendingPurchase } from "@/lib/meta-pixel";
+import {
+  consumePendingPurchase,
+  setPixelUserData,
+  trackPurchase,
+} from "@/lib/meta-pixel";
 
-export default function ThankYouPage() {
+export default function ObrigadoPage() {
   useEffect(() => {
-    flushPendingPurchase();
+    const pending = consumePendingPurchase();
+    if (!pending) return;
+    void setPixelUserData(pending.user).then(() => {
+      trackPurchase({
+        value: pending.value,
+        numItems: pending.numItems,
+        contents: pending.contents,
+        transactionId: pending.transactionId,
+      });
+    });
   }, []);
 
   return (
     <div className="checkout-page">
       <div className="payment-success">
         <h1>Pagamento confirmado!</h1>
-        <p>Obrigado. Seu pedido foi recebido e já está sendo preparado.</p>
+        <p>Seu pedido foi recebido e já está sendo preparado.</p>
         <p className="delivery-eta">
           Tempo estimado de entrega: <strong>entre 20 e 30 minutos</strong>
         </p>
-        <p className="checkout-subtitle">{storeConfig.name}</p>
         <Link href="/" className="btn-primary">
           Voltar ao cardápio
         </Link>
