@@ -2,15 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { formatBRL, storeConfig } from "@/data/store";
 import { useCart } from "@/lib/cart";
 import { useLocation } from "@/lib/location";
 import {
   setPixelUserData,
+  stashPendingPurchase,
   trackAddPaymentInfo,
   trackInitiateCheckout,
-  trackPurchase,
   type PixelContent,
 } from "@/lib/meta-pixel";
 
@@ -69,6 +70,7 @@ function toQrImageSrc(value?: string | null): string | null {
 }
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const { items, total, removeItem, clear } = useCart();
   const { displayCity, displayState } = useLocation();
   const [form, setForm] = useState<FormData>({
@@ -82,7 +84,6 @@ export default function CheckoutPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [payment, setPayment] = useState<PaymentResult | null>(null);
   const [qrSrc, setQrSrc] = useState<string | null>(null);
-  const [paid, setPaid] = useState(false);
   const [copied, setCopied] = useState(false);
   const initiatedRef = useRef(false);
   const purchaseTrackedRef = useRef<string | null>(null);
@@ -118,20 +119,16 @@ export default function CheckoutPage() {
   }, [items, total]);
 
   function markPurchasePaid(transactionId: string) {
-    if (purchaseTrackedRef.current === transactionId) {
-      setPaid(true);
-      clear();
-      return;
-    }
+    if (purchaseTrackedRef.current === transactionId) return;
     purchaseTrackedRef.current = transactionId;
-    trackPurchase({
+    stashPendingPurchase({
       value: total,
       numItems: pixelNumItems(),
       contents: pixelContents(),
       transactionId,
     });
-    setPaid(true);
     clear();
+    router.push("/obrigado");
   }
 
   useEffect(() => {
@@ -171,7 +168,7 @@ export default function CheckoutPage() {
   }, [payment]);
 
   useEffect(() => {
-    if (!payment?.transactionId || paid) return;
+    if (!payment?.transactionId) return;
 
     const interval = setInterval(() => {
       void checkPaymentStatus({ silent: true });
@@ -179,14 +176,14 @@ export default function CheckoutPage() {
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- polling only needs transaction id
-  }, [payment?.transactionId, paid]);
+  }, [payment?.transactionId]);
 
   function updateField(field: keyof FormData, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
   async function checkPaymentStatus(opts?: { silent?: boolean }) {
-    if (!payment?.transactionId || paid) return;
+    if (!payment?.transactionId || purchaseTrackedRef.current) return;
 
     if (!opts?.silent) {
       setChecking(true);
@@ -293,23 +290,6 @@ export default function CheckoutPage() {
     await navigator.clipboard.writeText(payment.copyPaste);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }
-
-  if (paid) {
-    return (
-      <div className="checkout-page">
-        <div className="payment-success">
-          <h1>Pagamento confirmado!</h1>
-          <p>Seu pedido foi recebido e já está sendo preparado.</p>
-          <p className="delivery-eta">
-            Tempo estimado de entrega: <strong>entre 20 e 30 minutos</strong>
-          </p>
-          <Link href="/" className="btn-primary">
-            Voltar ao cardápio
-          </Link>
-        </div>
-      </div>
-    );
   }
 
   return (

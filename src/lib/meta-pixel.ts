@@ -1,6 +1,6 @@
 import { products } from "@/data/store";
 
-export const META_PIXEL_ID = "4301164050136283";
+export const META_PIXEL_ID = "1126611906370348";
 export const META_PIXEL_CURRENCY = "BRL";
 
 type FbqFunction = {
@@ -202,12 +202,14 @@ export function trackAddPaymentInfo(input: {
   });
 }
 
-export function trackPurchase(input: {
+export type PendingPurchase = {
   value: number;
   numItems: number;
   contents: PixelContent[];
   transactionId: string;
-}) {
+};
+
+export function trackPurchase(input: PendingPurchase) {
   trackPixel(
     "Purchase",
     {
@@ -222,4 +224,27 @@ export function trackPurchase(input: {
     },
     { eventID: input.transactionId },
   );
+}
+
+const PENDING_PURCHASE_KEY = "meta-pending-purchase";
+
+export function stashPendingPurchase(purchase: PendingPurchase) {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(purchase));
+}
+
+/** Fires Purchase on the thank-you page, then clears the stash so refresh does not duplicate. */
+export function flushPendingPurchase(): PendingPurchase | null {
+  if (typeof window === "undefined") return null;
+  const raw = sessionStorage.getItem(PENDING_PURCHASE_KEY);
+  if (!raw) return null;
+  try {
+    const pending = JSON.parse(raw) as PendingPurchase;
+    trackPurchase(pending);
+    sessionStorage.removeItem(PENDING_PURCHASE_KEY);
+    return pending;
+  } catch {
+    sessionStorage.removeItem(PENDING_PURCHASE_KEY);
+    return null;
+  }
 }
