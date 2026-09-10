@@ -19,6 +19,10 @@ export default function HomePage() {
   const combos = products.filter((p) => p.category === "pizza");
   const individuals = products.filter((p) => p.category === "individual");
   const desserts = products.filter((p) => p.category === "sobremesa");
+  const beers = products.filter(
+    (p) => p.category === "cerveja-lata" || p.category === "cerveja-litro",
+  );
+  const wineItems = products.filter((p) => p.category === "vinho");
 
   return (
     <>
@@ -60,6 +64,28 @@ export default function HomePage() {
           <section id="sobremesa" className="categoria">
             <h2>Sobremesa — Pizzas Doces</h2>
             {desserts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onOpen={() => setFlavorProduct(product)}
+              />
+            ))}
+          </section>
+
+          <section id="bebidas" className="categoria">
+            <h2>Bebidas — Cervejas</h2>
+            {beers.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onOpen={() => setFlavorProduct(product)}
+              />
+            ))}
+          </section>
+
+          <section id="vinhos" className="categoria">
+            <h2>Vinhos</h2>
+            {wineItems.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}

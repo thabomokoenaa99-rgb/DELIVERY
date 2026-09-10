@@ -1,0 +1,418 @@
+import type { PricedFlavor } from "./individual-flavors";
+
+export const beerCans350: PricedFlavor[] = [
+  {
+    id: "crystal-350",
+    name: "Crystal 350ml",
+    description: "Pilsen leve e gelada, lata 350ml.",
+    price: 6.0,
+  },
+  {
+    id: "imperio-350",
+    name: "Império 350ml",
+    description: "Pilsen popular, lata 350ml.",
+    price: 6.2,
+  },
+  {
+    id: "kaiser-350",
+    name: "Kaiser 350ml",
+    description: "Pilsen tradicional, lata 350ml.",
+    price: 6.4,
+  },
+  {
+    id: "itaipava-350",
+    name: "Itaipava 350ml",
+    description: "Pilsen tradicional, lata 350ml.",
+    price: 6.5,
+  },
+  {
+    id: "schin-350",
+    name: "Schin 350ml",
+    description: "Pilsen leve, lata 350ml.",
+    price: 6.7,
+  },
+  {
+    id: "skol-350",
+    name: "Skol 350ml",
+    description: "A mais pedida. Pilsen leve, lata 350ml.",
+    price: 6.9,
+  },
+  {
+    id: "antarctica-350",
+    name: "Antarctica 350ml",
+    description: "Pilsen clássica, lata 350ml.",
+    price: 7.0,
+  },
+  {
+    id: "polar-350",
+    name: "Polar Export 350ml",
+    description: "Pilsen gaúcha, lata 350ml.",
+    price: 7.2,
+  },
+  {
+    id: "brahma-350",
+    name: "Brahma 350ml",
+    description: "Chopp em lata, sabor tradicional.",
+    price: 7.5,
+  },
+  {
+    id: "devassa-350",
+    name: "Devassa 350ml",
+    description: "Pilsen tropical, lata 350ml.",
+    price: 7.8,
+  },
+  {
+    id: "petra-350",
+    name: "Petra Puro Malte 350ml",
+    description: "Puro malte, lata 350ml.",
+    price: 7.9,
+  },
+  {
+    id: "eisenbahn-350",
+    name: "Eisenbahn Pilsen 350ml",
+    description: "Pilsen artesanal, lata 350ml.",
+    price: 8.0,
+  },
+  {
+    id: "brahma-duplo-350",
+    name: "Brahma Duplo Malte 350ml",
+    description: "Duplo malte, lata 350ml.",
+    price: 8.2,
+  },
+  {
+    id: "itaipava-malte-350",
+    name: "Itaipava 100% Malte 350ml",
+    description: "Puro malte, lata 350ml.",
+    price: 8.4,
+  },
+  {
+    id: "bohemia-350",
+    name: "Bohemia 350ml",
+    description: "Puro malte tradicional, lata 350ml.",
+    price: 8.5,
+  },
+  {
+    id: "skol-malte-350",
+    name: "Skol Puro Malte 350ml",
+    description: "Puro malte, lata 350ml.",
+    price: 8.7,
+  },
+  {
+    id: "amstel-350",
+    name: "Amstel 350ml",
+    description: "Pilsen holandesa, lata 350ml.",
+    price: 8.9,
+  },
+  {
+    id: "serramalte-350",
+    name: "Serramalte 350ml",
+    description: "Pilsen encorpada, lata 350ml.",
+    price: 9.0,
+  },
+  {
+    id: "sol-350",
+    name: "Sol 350ml",
+    description: "Lager mexicana, lata 350ml.",
+    price: 9.2,
+  },
+  {
+    id: "original-350",
+    name: "Original 350ml",
+    description: "Pilsen encorpada, lata 350ml.",
+    price: 9.5,
+  },
+  {
+    id: "becks-350",
+    name: "Beck's 350ml",
+    description: "Pilsner alemã, lata 350ml.",
+    price: 9.9,
+  },
+  {
+    id: "miller-350",
+    name: "Miller Genuine Draft 350ml",
+    description: "American lager, lata 350ml.",
+    price: 10.5,
+  },
+  {
+    id: "budweiser-350",
+    name: "Budweiser 350ml",
+    description: "American lager, lata 350ml.",
+    price: 10.9,
+  },
+  {
+    id: "spaten-350",
+    name: "Spaten 350ml",
+    description: "Munich Helles, lata 350ml.",
+    price: 10.9,
+  },
+  {
+    id: "patagonia-350",
+    name: "Patagonia Amber Lager 350ml",
+    description: "Amber lager, lata 350ml.",
+    price: 11.0,
+  },
+  {
+    id: "therezopolis-350",
+    name: "Therezópolis Gold 350ml",
+    description: "Pilsen serrana, lata 350ml.",
+    price: 11.2,
+  },
+  {
+    id: "stella-350",
+    name: "Stella Artois 350ml",
+    description: "Premium belga, lata 350ml.",
+    price: 11.5,
+  },
+  {
+    id: "michelob-350",
+    name: "Michelob Ultra 350ml",
+    description: "Lager leve, lata 350ml.",
+    price: 11.8,
+  },
+  {
+    id: "heineken-350",
+    name: "Heineken 350ml",
+    description: "Lager premium, lata 350ml.",
+    price: 11.9,
+  },
+  {
+    id: "corona-330",
+    name: "Corona Extra 330ml",
+    description: "Lager mexicana, long neck 330ml.",
+    price: 12.0,
+  },
+];
+
+export const beerBottles1L: PricedFlavor[] = [
+  {
+    id: "crystal-1l",
+    name: "Crystal 1L",
+    description: "Pilsen leve, garrafa 1 litro.",
+    price: 15.0,
+  },
+  {
+    id: "imperio-1l",
+    name: "Império 1L",
+    description: "Pilsen popular, garrafa 1 litro.",
+    price: 15.5,
+  },
+  {
+    id: "itaipava-1l",
+    name: "Itaipava 1L",
+    description: "Pilsen tradicional, garrafa 1 litro.",
+    price: 15.9,
+  },
+  {
+    id: "kaiser-1l",
+    name: "Kaiser 1L",
+    description: "Pilsen tradicional, garrafa 1 litro.",
+    price: 16.2,
+  },
+  {
+    id: "skol-1l",
+    name: "Skol 1L",
+    description: "Pilsen leve, garrafa 1 litro.",
+    price: 16.5,
+  },
+  {
+    id: "antarctica-1l",
+    name: "Antarctica 1L",
+    description: "Pilsen clássica, garrafa 1 litro.",
+    price: 16.9,
+  },
+  {
+    id: "brahma-1l",
+    name: "Brahma 1L",
+    description: "Chopp em garrafa de 1 litro.",
+    price: 17.5,
+  },
+  {
+    id: "polar-1l",
+    name: "Polar Export 1L",
+    description: "Pilsen gaúcha, garrafa 1 litro.",
+    price: 17.9,
+  },
+  {
+    id: "devassa-1l",
+    name: "Devassa 1L",
+    description: "Pilsen tropical, garrafa 1 litro.",
+    price: 18.5,
+  },
+  {
+    id: "petra-1l",
+    name: "Petra Puro Malte 1L",
+    description: "Puro malte, garrafa 1 litro.",
+    price: 18.9,
+  },
+  {
+    id: "bohemia-1l",
+    name: "Bohemia 1L",
+    description: "Puro malte tradicional, garrafa 1 litro.",
+    price: 19.5,
+  },
+  {
+    id: "serramalte-1l",
+    name: "Serramalte 1L",
+    description: "Pilsen encorpada, garrafa 1 litro.",
+    price: 19.9,
+  },
+  {
+    id: "amstel-1l",
+    name: "Amstel 1L",
+    description: "Pilsen holandesa, garrafa 1 litro.",
+    price: 20.9,
+  },
+  {
+    id: "original-1l",
+    name: "Original 1L",
+    description: "Pilsen encorpada, garrafa 1 litro.",
+    price: 21.9,
+  },
+  {
+    id: "eisenbahn-1l",
+    name: "Eisenbahn Pilsen 1L",
+    description: "Pilsen artesanal, garrafa 1 litro.",
+    price: 22.5,
+  },
+  {
+    id: "budweiser-1l",
+    name: "Budweiser 1L",
+    description: "American lager, garrafa 1 litro.",
+    price: 23.5,
+  },
+  {
+    id: "stella-1l",
+    name: "Stella Artois 1L",
+    description: "Premium belga, garrafa 1 litro.",
+    price: 24.0,
+  },
+  {
+    id: "spaten-1l",
+    name: "Spaten 1L",
+    description: "Munich Helles, garrafa 1 litro.",
+    price: 24.5,
+  },
+  {
+    id: "heineken-1l",
+    name: "Heineken 1L",
+    description: "Lager premium, garrafa 1 litro.",
+    price: 25.0,
+  },
+];
+
+export const wines: PricedFlavor[] = [
+  {
+    id: "san-martin-tinto",
+    name: "San Martin Tinto de Mesa 750ml",
+    description: "Tinto de mesa, clássico de pizzaria.",
+    price: 21.9,
+  },
+  {
+    id: "cancao-suave",
+    name: "Canção Tinto Suave 750ml",
+    description: "Tinto suave, leve e frutado.",
+    price: 22.9,
+  },
+  {
+    id: "cancao-seco",
+    name: "Canção Tinto Seco 750ml",
+    description: "Tinto seco, leve para pizza.",
+    price: 23.9,
+  },
+  {
+    id: "pergola-suave",
+    name: "Pérgola Tinto Suave 750ml",
+    description: "Tinto suave, o mais pedido da casa.",
+    price: 24.9,
+  },
+  {
+    id: "pergola-seco",
+    name: "Pérgola Tinto Seco 750ml",
+    description: "Tinto seco, clássico de mesa.",
+    price: 25.9,
+  },
+  {
+    id: "salton-classic",
+    name: "Salton Classic Tinto 750ml",
+    description: "Tinto brasileiro, suave e frutado.",
+    price: 27.9,
+  },
+  {
+    id: "aurora-reservado",
+    name: "Aurora Reservado Cabernet 750ml",
+    description: "Cabernet gaúcho, seco e equilibrado.",
+    price: 28.9,
+  },
+  {
+    id: "marcus-james-cabernet",
+    name: "Marcus James Cabernet Sauvignon 750ml",
+    description: "Cabernet seco, notas de frutas vermelhas.",
+    price: 29.9,
+  },
+  {
+    id: "miolo-selecao",
+    name: "Miolo Seleção Cabernet 750ml",
+    description: "Cabernet brasileiro, corpo médio.",
+    price: 31.9,
+  },
+  {
+    id: "almaden-cabernet",
+    name: "Almadén Cabernet Sauvignon 750ml",
+    description: "Cabernet brasileiro, seco e equilibrado.",
+    price: 32.9,
+  },
+  {
+    id: "gato-negro",
+    name: "Gato Negro Cabernet Sauvignon 750ml",
+    description: "Cabernet chileno, frutado.",
+    price: 33.9,
+  },
+  {
+    id: "santa-helena-cabernet",
+    name: "Santa Helena Reservado Cabernet 750ml",
+    description: "Reservado chileno, corpo médio.",
+    price: 34.9,
+  },
+  {
+    id: "reservado-carmenere",
+    name: "Concha y Toro Reservado Carmenère 750ml",
+    description: "Carmenère chileno, macio e aromático.",
+    price: 36.9,
+  },
+  {
+    id: "santa-carolina",
+    name: "Santa Carolina Reservado Cabernet 750ml",
+    description: "Cabernet chileno, seco.",
+    price: 37.9,
+  },
+  {
+    id: "reservado-cabernet",
+    name: "Concha y Toro Reservado Cabernet 750ml",
+    description: "Cabernet chileno, seco e aromático.",
+    price: 39.9,
+  },
+  {
+    id: "jp-chenet",
+    name: "JP Chenet Cabernet Syrah 750ml",
+    description: "Tinto francês, frutado e macio.",
+    price: 42.9,
+  },
+  {
+    id: "trapiche-malbec",
+    name: "Trapiche Oak Cask Malbec 750ml",
+    description: "Malbec argentino, encorpado.",
+    price: 44.9,
+  },
+  {
+    id: "casillero-cabernet",
+    name: "Casillero del Diablo Cabernet 750ml",
+    description: "Cabernet premium, encorpado.",
+    price: 49.9,
+  },
+];
+
+export const beerCanMinPrice = Math.min(...beerCans350.map((item) => item.price));
+export const beerBottleMinPrice = Math.min(
+  ...beerBottles1L.map((item) => item.price),
+);
+export const wineMinPrice = Math.min(...wines.map((item) => item.price));

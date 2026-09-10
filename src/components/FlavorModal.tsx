@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { trackViewContent } from "@/lib/meta-pixel";
 import { trackTikTokSearch } from "@/lib/tiktok-pixel";
+import { beerBottles1L, beerCans350, wines } from "@/data/beverages";
 import { dessertFlavors, dessertPreferences } from "@/data/dessert-flavors";
 import { individualFlavors } from "@/data/individual-flavors";
 import { formatBRL, type Product } from "@/data/store";
@@ -18,6 +19,7 @@ function catalog(category: string) {
   if (category === "sobremesa") {
     return {
       searchPlaceholder: "Ex: brigadeiro, oreo, banana",
+      searchLabel: "Buscar sabor",
       preference: {
         title: "Escolha sua preferência",
         hint: "Escolha pelo menos 1 e no máximo 1 opção.",
@@ -27,15 +29,54 @@ function catalog(category: string) {
       flavorHint: "Escolha pelo menos 1 e no máximo 2 opções.",
       flavorMax: 2,
       flavors: dessertFlavors,
+      itemLabel: "Sabor",
+    };
+  }
+  if (category === "cerveja-lata") {
+    return {
+      searchPlaceholder: "Ex: heineken, skol, brahma",
+      searchLabel: "Buscar marca",
+      preference: null,
+      flavorTitle: "Cerveja variada — 350ml",
+      flavorHint: "Escolha 1 opção",
+      flavorMax: 1,
+      flavors: beerCans350,
+      itemLabel: "Marca",
+    };
+  }
+  if (category === "cerveja-litro") {
+    return {
+      searchPlaceholder: "Ex: original, brahma, heineken",
+      searchLabel: "Buscar marca",
+      preference: null,
+      flavorTitle: "Cerveja variada — 1 litro",
+      flavorHint: "Escolha 1 opção",
+      flavorMax: 1,
+      flavors: beerBottles1L,
+      itemLabel: "Marca",
+    };
+  }
+  if (category === "vinho") {
+    return {
+      searchPlaceholder: "Ex: pérgola, almadén, casillero",
+      searchLabel: "Buscar vinho",
+      preference: null,
+      flavorTitle: "Escolha o vinho",
+      flavorHint: "Escolha 1 opção",
+      flavorMax: 1,
+      flavors: wines,
+      itemLabel: "Vinho",
     };
   }
   return {
     searchPlaceholder: "Ex: calabresa, frango, quatro queijos",
+    searchLabel: "Buscar sabor",
     preference: null,
     flavorTitle: "Escolha o sabor:",
     flavorHint: "Escolha 1 opção",
     flavorMax: 1,
     flavors: individualFlavors,
+    itemLabel: "Sabor",
   };
 }
 
@@ -47,6 +88,14 @@ export function FlavorModal({ product, onClose }: Props) {
   const [prefId, setPrefId] = useState("");
   const [flavorIds, setFlavorIds] = useState<string[]>([]);
   const [note, setNote] = useState("");
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
 
   useEffect(() => {
     trackViewContent({
@@ -108,9 +157,11 @@ export function FlavorModal({ product, onClose }: Props) {
       productId: product.id,
       title: `${product.title} — ${selectedFlavors.map((f) => f.name).join(" / ")}`,
       price,
+      quantity: 1,
       details: [
         pref ? `Preferência: ${pref.name}` : null,
-        `Sabor: ${selectedFlavors.map((f) => f.name).join(" / ")}`,
+        `${cfg.itemLabel}: ${selectedFlavors.map((f) => f.name).join(" / ")}`,
+        `Preço: ${formatBRL(price)}`,
         note ? `Obs: ${note}` : null,
       ]
         .filter(Boolean)
@@ -134,7 +185,11 @@ export function FlavorModal({ product, onClose }: Props) {
         <div className="flavor-modal-scroll">
           <div className="flavor-modal-hero">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={product.image} alt={product.title} />
+            <img
+              src={product.image}
+              alt={product.title}
+              className={product.imageContain ? "photo-contain" : undefined}
+            />
             <h2>{product.title}</h2>
             <p>{product.subtitle}</p>
           </div>
@@ -171,7 +226,7 @@ export function FlavorModal({ product, onClose }: Props) {
           )}
 
           <label className="flavor-search">
-            Buscar sabor
+            {cfg.searchLabel}
             <input
               type="search"
               value={query}
@@ -214,7 +269,7 @@ export function FlavorModal({ product, onClose }: Props) {
                 );
               })}
               {flavors.length === 0 && (
-                <p className="muted">Nenhum sabor encontrado.</p>
+                <p className="muted">Nenhuma opção encontrada.</p>
               )}
             </div>
           </section>

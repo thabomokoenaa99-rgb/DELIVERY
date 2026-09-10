@@ -630,6 +630,13 @@ button.product-link {
   background: #eee;
 }
 
+.flavor-modal-hero img.photo-contain,
+.product-photo img.photo-contain {
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
+}
+
 .flavor-modal-hero h2 {
   margin: 12px 0 4px;
   font-size: 18px;
@@ -666,6 +673,7 @@ button.product-link {
   gap: 12px;
   padding: 12px 16px;
   border-top: 1px solid #eee;
+  flex-shrink: 0;
 }
 
 .flavor-modal-footer span {
@@ -1036,5 +1044,43 @@ button.product-link {
 @media (min-width: 768px) {
   #topo .cover.main {
     height: 220px;
+  }
+}
+
+@media (max-width: 640px) {
+  .modal-backdrop:has(.flavor-modal) {
+    padding: 0;
+    place-items: stretch;
+  }
+
+  .flavor-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .flavor-modal-hero img {
+    height: 150px;
+  }
+
+  .flavor-modal-footer {
+    padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  }
+
+  .flavor-modal-footer button {
+    flex: 1;
+    min-height: 48px;
+  }
+
+  .option-row {
+    min-height: 52px;
+    align-items: center;
+    padding: 12px;
+  }
+
+  .cart-line {
+    flex-wrap: wrap;
   }
 }

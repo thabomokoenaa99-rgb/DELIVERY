@@ -70,6 +70,7 @@ export function ProductCard({ product, onOpen }: Props) {
             height={110}
             alt={product.title}
             loading="lazy"
+            className={product.imageContain ? "photo-contain" : undefined}
           />
         </figure>
       </div>

@@ -7,6 +7,8 @@ type Props = {
   params: Promise<{ categoria: string; slug: string }>;
 };
 
+export const dynamicParams = true;
+
 export function generateStaticParams() {
   return products.map((p) => ({
     categoria: p.category,

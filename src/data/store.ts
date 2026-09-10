@@ -1,3 +1,9 @@
+import {
+  beerBottleMinPrice,
+  beerCanMinPrice,
+  wineMinPrice,
+} from "./beverages";
+
 export type Flavor = {
   id: string;
   name: string;
@@ -18,6 +24,8 @@ export type Product = {
   stock?: number;
   highlight?: string;
   image: string;
+  /** Keep product photo fully visible (beverages). */
+  imageContain?: boolean;
   /** Card shows "A partir de" instead of a fixed/discounted price. */
   startingAt?: boolean;
   /** Combo: choose flavors/drinks. Simple: add-to-cart only (ex: pizza doce). */
@@ -215,6 +223,54 @@ export const products: Product[] = [
     price: 29.5,
     startingAt: true,
     image: "/images/chocolate-com-morango.png",
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "b1",
+    slug: "cervejas-lata",
+    category: "cerveja-lata",
+    title: "Cervejas Lata",
+    subtitle:
+      "Cerveja variada 350ml. Escolha a marca tradicional que preferir.",
+    price: beerCanMinPrice,
+    startingAt: true,
+    image: "/images/cervejas-lata.jpeg",
+    imageContain: true,
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "b2",
+    slug: "cervejas-1-litro",
+    category: "cerveja-litro",
+    title: "Cervejas 1 Litro",
+    subtitle:
+      "Garrafa de 1 litro. Skol, Brahma, Original, Heineken e outras marcas.",
+    price: beerBottleMinPrice,
+    startingAt: true,
+    image: "/images/cervejas-1l.jpg",
+    imageContain: true,
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "v1",
+    slug: "vinhos",
+    category: "vinho",
+    title: "Vinhos",
+    subtitle:
+      "Tinto suave ou seco 750ml. Pérgola, Canção, Almadén, Casillero e mais.",
+    price: wineMinPrice,
+    startingAt: true,
+    image: "/images/vinhos.png",
+    imageContain: true,
     simple: true,
     pizzaCount: 0,
     drinkCount: 0,
