@@ -1,6 +1,8 @@
 import {
   beerBottleMinPrice,
   beerCanMinPrice,
+  sodaBottleMinPrice,
+  sodaCanMinPrice,
   wineMinPrice,
 } from "./beverages";
 
@@ -254,6 +256,38 @@ export const products: Product[] = [
     price: beerBottleMinPrice,
     startingAt: true,
     image: "/images/cervejas-1l.jpg",
+    imageContain: true,
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "r1",
+    slug: "refrigerantes-lata",
+    category: "refri-lata",
+    title: "Refrigerante Lata",
+    subtitle:
+      "Lata 350ml. Coca-Cola, Fanta, Guaraná, Sprite e outras opções.",
+    price: sodaCanMinPrice,
+    startingAt: true,
+    image: "/images/refrigerantes-lata.jpg",
+    imageContain: true,
+    simple: true,
+    pizzaCount: 0,
+    drinkCount: 0,
+    borderMax: 0,
+  },
+  {
+    id: "r2",
+    slug: "refrigerantes-2-litros",
+    category: "refri-2l",
+    title: "Refrigerante 2 Litros",
+    subtitle:
+      "Garrafa 2 litros. Coca-Cola, Guaraná, Fanta, Sprite e outras opções.",
+    price: sodaBottleMinPrice,
+    startingAt: true,
+    image: "/images/refrigerantes-2l.jpg",
     imageContain: true,
     simple: true,
     pizzaCount: 0,

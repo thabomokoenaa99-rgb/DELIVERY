@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/lib/cart";
 import { trackViewContent } from "@/lib/meta-pixel";
 import { trackTikTokSearch } from "@/lib/tiktok-pixel";
-import { beerBottles1L, beerCans350, wines } from "@/data/beverages";
+import {
+  beerBottles1L,
+  beerCans350,
+  sodaBottles2L,
+  sodaCans350,
+  wines,
+} from "@/data/beverages";
 import { dessertFlavors, dessertPreferences } from "@/data/dessert-flavors";
 import { individualFlavors } from "@/data/individual-flavors";
 import { formatBRL, type Product } from "@/data/store";
@@ -54,6 +60,30 @@ function catalog(category: string) {
       flavorMax: 1,
       flavors: beerBottles1L,
       itemLabel: "Marca",
+    };
+  }
+  if (category === "refri-lata") {
+    return {
+      searchPlaceholder: "Ex: coca, fanta, guaraná",
+      searchLabel: "Buscar refrigerante",
+      preference: null,
+      flavorTitle: "Refrigerante lata — 350ml",
+      flavorHint: "Escolha 1 opção",
+      flavorMax: 1,
+      flavors: sodaCans350,
+      itemLabel: "Sabor",
+    };
+  }
+  if (category === "refri-2l") {
+    return {
+      searchPlaceholder: "Ex: coca, sprite, pepsi",
+      searchLabel: "Buscar refrigerante",
+      preference: null,
+      flavorTitle: "Refrigerante — 2 litros",
+      flavorHint: "Escolha 1 opção",
+      flavorMax: 1,
+      flavors: sodaBottles2L,
+      itemLabel: "Sabor",
     };
   }
   if (category === "vinho") {

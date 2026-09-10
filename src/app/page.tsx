@@ -20,7 +20,11 @@ export default function HomePage() {
   const individuals = products.filter((p) => p.category === "individual");
   const desserts = products.filter((p) => p.category === "sobremesa");
   const beers = products.filter(
-    (p) => p.category === "cerveja-lata" || p.category === "cerveja-litro",
+    (p) =>
+      p.category === "cerveja-lata" ||
+      p.category === "cerveja-litro" ||
+      p.category === "refri-lata" ||
+      p.category === "refri-2l",
   );
   const wineItems = products.filter((p) => p.category === "vinho");
 
@@ -73,7 +77,7 @@ export default function HomePage() {
           </section>
 
           <section id="bebidas" className="categoria">
-            <h2>Bebidas — Cervejas</h2>
+            <h2>Bebidas</h2>
             {beers.map((product) => (
               <ProductCard
                 key={product.id}

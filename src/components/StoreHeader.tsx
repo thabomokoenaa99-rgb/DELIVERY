@@ -87,7 +87,7 @@ export function StoreHeader() {
             </Link>
             <Link href="/#pizza-individual">Pizza Individual</Link>
             <Link href="/#sobremesa">Sobremesa — Pizzas Doces</Link>
-            <Link href="/#bebidas">Bebidas — Cervejas</Link>
+            <Link href="/#bebidas">Bebidas</Link>
             <Link href="/#vinhos">Vinhos</Link>
           </div>
         </div>
