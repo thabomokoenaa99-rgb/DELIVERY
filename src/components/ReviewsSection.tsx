@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { reviews, storeConfig } from "@/data/store";
 
 export function ReviewsSection() {
@@ -27,12 +28,13 @@ export function ReviewsSection() {
               <p>{review.text}</p>
             </div>
             <div className="review-photo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={review.image}
-                width={70}
-                height={70}
+                width={140}
+                height={140}
                 alt=""
+                sizes="70px"
+                quality={55}
                 loading="lazy"
               />
             </div>

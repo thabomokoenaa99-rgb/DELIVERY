@@ -352,12 +352,29 @@ button.product-link {
   padding: 0 6px;
 }
 
+.product-photo figure {
+  width: 110px;
+  height: 110px;
+  margin: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
 .product-photo img,
 .review-photo img {
   border-radius: 10px;
   object-fit: cover;
   object-position: center 42%;
   background: #eee;
+  width: 110px;
+  height: 110px;
+}
+
+.product-photo img.photo-contain {
+  object-fit: contain;
+  object-position: center;
+  background: #fff;
 }
 
 .cta-secondary {
@@ -630,11 +647,15 @@ button.product-link {
   background: #eee;
 }
 
-.flavor-modal-hero img.photo-contain,
-.product-photo img.photo-contain {
-  object-fit: contain;
-  object-position: center;
-  background: #fff;
+.review-photo figure {
+  width: 70px;
+  height: 70px;
+  margin: 0;
+}
+
+.review-photo img {
+  width: 70px;
+  height: 70px;
 }
 
 .flavor-modal-hero h2 {

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { storeConfig } from "@/data/store";
 import { useLocation } from "@/lib/location";
@@ -15,11 +16,14 @@ export function StoreHeader() {
       >
         <div className="logo">
           <figure>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src="/images/logo.png"
               alt={storeConfig.name}
               title={storeConfig.name}
+              width={96}
+              height={96}
+              preload
+              quality={70}
             />
           </figure>
         </div>

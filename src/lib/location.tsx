@@ -102,9 +102,9 @@ function detectCityViaGeolocation(): Promise<Location | null> {
       },
       () => resolve(null),
       {
-        enableHighAccuracy: true,
-        timeout: 20_000,
-        maximumAge: 0,
+        enableHighAccuracy: false,
+        timeout: 8_000,
+        maximumAge: 300_000,
       },
     );
   });
@@ -123,7 +123,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       setConfirmed(true);
       setModalOpen(false);
     } else {
-      setModalOpen(true);
+      setModalOpen(false);
     }
   }, []);
 
