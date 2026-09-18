@@ -1243,9 +1243,9 @@ button.product-link {
 
 .store-dominos #topo .cover.main {
   height: auto;
-  aspect-ratio: 390 / 188;
+  aspect-ratio: 1 / 1;
   background-size: cover;
-  background-position: top center;
+  background-position: center;
 }
 
 .store-dominos .product-hero-media {
@@ -1267,7 +1267,7 @@ button.product-link {
 
 .dominos-tiles {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin: 12px 0 4px;
 }
