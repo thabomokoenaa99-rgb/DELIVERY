@@ -13,6 +13,7 @@ import {
   useDominosCoupon,
 } from "@/lib/dominos-coupon";
 import { useCart } from "@/lib/cart";
+import { formatCep } from "@/lib/br-address";
 import { useLocation } from "@/lib/location";
 import {
   setPixelUserData,
@@ -86,11 +87,15 @@ export default function CheckoutPage() {
   const couponDiscount =
     off > 0 ? dominosSubtotal - applyFirstOrderOff(dominosSubtotal) : 0;
   const payTotal = Math.round((total - couponDiscount) * 100) / 100;
-  const { displayCity, displayState } = useLocation();
+  const { displayCity, displayState, location } = useLocation();
   const [form, setForm] = useState<FormData>({
     ...emptyForm,
     city: displayCity,
     state: displayState,
+    street: location?.street ?? "",
+    neighborhood: location?.neighborhood ?? "",
+    zipCode: location?.zipCode ? formatCep(location.zipCode) : "",
+    number: location?.number ?? "",
   });
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -106,10 +111,14 @@ export default function CheckoutPage() {
   useEffect(() => {
     setForm((prev) => ({
       ...prev,
-      city: displayCity,
-      state: displayState,
+      city: location?.city ?? displayCity,
+      state: location?.state ?? displayState,
+      street: location?.street || prev.street,
+      neighborhood: location?.neighborhood || prev.neighborhood,
+      zipCode: location?.zipCode ? formatCep(location.zipCode) : prev.zipCode,
+      number: location?.number || prev.number,
     }));
-  }, [displayCity, displayState]);
+  }, [displayCity, displayState, location]);
 
   function pixelContents(): PixelContent[] {
     return items.map((item) => ({

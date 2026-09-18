@@ -1,11 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import { useDominosCoupon, DOMINOS_COUPON_CODE } from "@/lib/dominos-coupon";
+import { useLocation } from "@/lib/location";
 
 export function DominosCouponModal() {
   const { status, activate, dismiss } = useDominosCoupon();
-  if (status !== "idle") return null;
+  const { confirmed, ready, openModal } = useLocation();
 
+  useEffect(() => {
+    if (!ready || status == null || status === "idle" || confirmed) return;
+    openModal();
+  }, [ready, status, confirmed, openModal]);
+
+  if (status !== "idle") return null;
   return (
     <div className="modal-backdrop dominos-coupon-backdrop" role="dialog" aria-modal="true">
       <div className="modal-card dominos-coupon-card">

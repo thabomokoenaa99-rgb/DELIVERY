@@ -378,64 +378,6 @@ export const reviews = [
   },
 ];
 
-export const citiesByState: Record<string, string[]> = {
-  SP: [
-    "São Paulo",
-    "Guarulhos",
-    "Campinas",
-    "São Bernardo do Campo",
-    "Santo André",
-    "Osasco",
-    "Sorocaba",
-    "Jardim Maria Estela",
-  ],
-  RJ: [
-    "Rio de Janeiro",
-    "Niterói",
-    "Duque de Caxias",
-    "Nova Iguaçu",
-    "São Gonçalo",
-  ],
-  MG: ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora"],
-  PR: ["Curitiba", "Londrina", "Maringá", "Ponta Grossa"],
-  RS: ["Porto Alegre", "Caxias do Sul", "Pelotas", "Canoas"],
-  BA: ["Salvador", "Feira de Santana", "Vitória da Conquista"],
-  CE: ["Fortaleza", "Caucaia", "Juazeiro do Norte"],
-  PE: ["Recife", "Jaboatão dos Guararapes", "Olinda"],
-  GO: ["Goiânia", "Aparecida de Goiânia", "Anápolis"],
-  DF: ["Brasília", "Taguatinga", "Ceilândia"],
-};
-
-export const brazilianStates = [
-  { value: "SP", label: "São Paulo" },
-  { value: "RO", label: "Rondônia" },
-  { value: "AC", label: "Acre" },
-  { value: "AM", label: "Amazonas" },
-  { value: "RR", label: "Roraima" },
-  { value: "PA", label: "Pará" },
-  { value: "AP", label: "Amapá" },
-  { value: "TO", label: "Tocantins" },
-  { value: "MA", label: "Maranhão" },
-  { value: "PI", label: "Piauí" },
-  { value: "CE", label: "Ceará" },
-  { value: "RN", label: "Rio Grande do Norte" },
-  { value: "PB", label: "Paraíba" },
-  { value: "PE", label: "Pernambuco" },
-  { value: "AL", label: "Alagoas" },
-  { value: "SE", label: "Sergipe" },
-  { value: "BA", label: "Bahia" },
-  { value: "MG", label: "Minas Gerais" },
-  { value: "ES", label: "Espírito Santo" },
-  { value: "RJ", label: "Rio de Janeiro" },
-  { value: "PR", label: "Paraná" },
-  { value: "SC", label: "Santa Catarina" },
-  { value: "RS", label: "Rio Grande do Sul" },
-  { value: "MS", label: "Mato Grosso do Sul" },
-  { value: "MT", label: "Mato Grosso" },
-  { value: "GO", label: "Goiás" },
-  { value: "DF", label: "Distrito Federal" },
-];
-
 export function formatBRL(value: number) {
   return value.toLocaleString("pt-BR", {
     style: "currency",

@@ -1,8 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { brazilianStates, citiesByState } from "@/data/store";
+import { useEffect, useState } from "react";
+import { formatCep, digits, type Address } from "@/lib/br-address";
 import { useLocation } from "@/lib/location";
+
+function AddressPreview({ value }: { value: Address }) {
+  return (
+    <div className="modal-address">
+      {value.street && (
+        <p>
+          {value.street}
+          {value.number ? `, ${value.number}` : ""}
+        </p>
+      )}
+      {value.neighborhood && <p>{value.neighborhood}</p>}
+      <p>
+        {value.city} - {value.state}
+      </p>
+      {value.zipCode && <p>CEP {formatCep(value.zipCode)}</p>}
+    </div>
+  );
+}
 
 export function LocationModal() {
   const {
@@ -11,52 +29,56 @@ export function LocationModal() {
     modalOpen,
     closeModal,
     setLocation,
-    acceptGps,
+    detectGps,
+    lookupCep,
     location,
   } = useLocation();
 
-  const [step, setStep] = useState<"state" | "city">("state");
-  const [state, setState] = useState("SP");
-  const [city, setCity] = useState("");
+  const [cep, setCep] = useState("");
+  const [preview, setPreview] = useState<Address | null>(null);
   const [gpsFailed, setGpsFailed] = useState(false);
+  const [cepFailed, setCepFailed] = useState(false);
+  const [via, setVia] = useState<"gps" | "cep" | null>(null);
 
   useEffect(() => {
     if (!modalOpen) return;
     setGpsFailed(false);
-    if (!location) return;
-    setState(location.state);
-    setCity(location.city);
-    setStep(location.state && location.city ? "city" : "state");
+    setCepFailed(false);
+    setVia(null);
+    setPreview(location);
+    setCep(formatCep(location?.zipCode ?? ""));
   }, [modalOpen, location]);
-
-  const cities = useMemo(() => {
-    const base = state ? [...(citiesByState[state] ?? [])] : [];
-    if (city && !base.includes(city)) base.unshift(city);
-    if (base.length === 0 && city) return [city];
-    return base.length > 0 ? base : ["Capital"];
-  }, [state, city]);
 
   if (!modalOpen) return null;
 
-  function nextFromState() {
-    if (!state) return;
-    const list = citiesByState[state] ?? [];
-    setCity(list.includes(city) ? city : list[0] ?? city ?? "Capital");
-    setStep("city");
-  }
-
-  function confirm() {
-    if (!state || !city) return;
-    const stateLabel =
-      brazilianStates.find((s) => s.value === state)?.label ?? state;
-    setLocation({ state, stateLabel, city });
-  }
-
-  function useGps() {
+  async function useGps() {
     setGpsFailed(false);
-    void acceptGps().then((ok) => {
-      if (!ok) setGpsFailed(true);
-    });
+    setCepFailed(false);
+    setVia("gps");
+    const result = await detectGps();
+    if (!result) {
+      setGpsFailed(true);
+      return;
+    }
+    setPreview(result);
+  }
+
+  async function searchCep() {
+    const raw = digits(cep);
+    if (raw.length !== 8) {
+      setCepFailed(true);
+      return;
+    }
+    setCepFailed(false);
+    setGpsFailed(false);
+    setVia("cep");
+    const result = await lookupCep(raw);
+    if (!result) {
+      setCepFailed(true);
+      return;
+    }
+    setPreview(result);
+    setCep(formatCep(result.zipCode ?? raw));
   }
 
   return (
@@ -73,85 +95,81 @@ export function LocationModal() {
           </button>
         )}
 
-        <h2>Procure a loja mais próxima de você!</h2>
+        <h2>Onde vamos entregar?</h2>
 
         {detecting ? (
           <p className="modal-detecting">
-            Detectando sua localização… Aceite a permissão no navegador.
+            {via === "cep"
+              ? "Consultando CEP…"
+              : "Detectando sua localização… Aceite a permissão no navegador."}
           </p>
         ) : (
           <div className="modal-detected">
-            <button type="button" className="btn-primary" onClick={useGps}>
+            <button type="button" className="btn-primary" onClick={() => void useGps()}>
               Usar minha localização
             </button>
             {gpsFailed && (
               <p className="modal-detecting">
-                Não deu para detectar. Permita o acesso no navegador ou escolha
-                abaixo.
+                Não deu para detectar. Permita o acesso no navegador ou busque
+                pelo CEP.
               </p>
             )}
           </div>
         )}
 
         <div className="modal-divider">
-          <span>ou escolha manualmente</span>
+          <span>ou pesquise o CEP</span>
         </div>
 
-        {step === "state" ? (
-          <div className="modal-field">
-            <p>Escolha seu estado:</p>
-            <select
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              className="modal-select"
-            >
-              {brazilianStates.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
+        <div className="modal-field">
+          <p>
+            <label htmlFor="location-cep">CEP</label>
+          </p>
+          <input
+            id="location-cep"
+            className="modal-select"
+            inputMode="numeric"
+            autoComplete="postal-code"
+            placeholder="00000-000"
+            value={cep}
+            onChange={(e) => {
+              setCep(formatCep(e.target.value));
+              setCepFailed(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                void searchCep();
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => void searchCep()}
+            disabled={detecting || digits(cep).length !== 8}
+          >
+            Buscar CEP
+          </button>
+          {cepFailed && (
+            <p className="modal-detecting">
+              CEP não encontrado. Confira os 8 dígitos e tente de novo.
+            </p>
+          )}
+        </div>
+
+        {preview && (
+          <>
+            <AddressPreview value={preview} />
             <button
               type="button"
-              className="btn-primary"
-              onClick={nextFromState}
-              disabled={!state}
+              className="btn-primary btn-block"
+              onClick={() => setLocation(preview)}
+              disabled={detecting}
             >
-              Próximo
+              Confirmar endereço
             </button>
-          </div>
-        ) : (
-          <div className="modal-field">
-            <p>Escolha sua cidade:</p>
-            <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="modal-select"
-            >
-              {cities.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn-secondary"
-                onClick={() => setStep("state")}
-              >
-                Voltar
-              </button>
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={confirm}
-                disabled={!state || !city}
-              >
-                Confirmar
-              </button>
-            </div>
-          </div>
+          </>
         )}
       </div>
     </div>

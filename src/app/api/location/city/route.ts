@@ -1,73 +1,12 @@
 import { NextResponse } from "next/server";
-
-type DetectedLocation = {
-  state: string;
-  stateLabel: string;
-  city: string;
-};
-
-const DEFAULT: DetectedLocation = {
-  state: "SP",
-  stateLabel: "São Paulo",
-  city: "São Paulo",
-};
-
-const STATE_LABELS: Record<string, string> = {
-  AC: "Acre",
-  AL: "Alagoas",
-  AP: "Amapá",
-  AM: "Amazonas",
-  BA: "Bahia",
-  CE: "Ceará",
-  DF: "Distrito Federal",
-  ES: "Espírito Santo",
-  GO: "Goiás",
-  MA: "Maranhão",
-  MT: "Mato Grosso",
-  MS: "Mato Grosso do Sul",
-  MG: "Minas Gerais",
-  PA: "Pará",
-  PB: "Paraíba",
-  PR: "Paraná",
-  PE: "Pernambuco",
-  PI: "Piauí",
-  RJ: "Rio de Janeiro",
-  RN: "Rio Grande do Norte",
-  RS: "Rio Grande do Sul",
-  RO: "Rondônia",
-  RR: "Roraima",
-  SC: "Santa Catarina",
-  SP: "São Paulo",
-  SE: "Sergipe",
-  TO: "Tocantins",
-};
-
-function normalizeCity(city: string): string {
-  const trimmed = city.trim();
-  if (!trimmed) return DEFAULT.city;
-  if (/^sao paulo$/i.test(trimmed)) return "São Paulo";
-  if (/^rio de janeiro$/i.test(trimmed)) return "Rio de Janeiro";
-  return trimmed;
-}
-
-function buildLocation(
-  city?: string | null,
-  stateCode?: string | null,
-  stateLabel?: string | null,
-): DetectedLocation | null {
-  const cityName = city?.trim();
-  if (!cityName) return null;
-
-  const code = (stateCode ?? "SP").toUpperCase();
-  return {
-    state: STATE_LABELS[code] ? code : "SP",
-    stateLabel:
-      STATE_LABELS[code] ??
-      stateLabel?.trim() ??
-      DEFAULT.stateLabel,
-    city: normalizeCity(cityName),
-  };
-}
+import {
+  addressFromViaCep,
+  buildAddress,
+  digits,
+  STATE_LABELS,
+  type Address,
+  type ViaCep,
+} from "@/lib/br-address";
 
 function cityFromNominatim(a: Record<string, string | undefined>): string | null {
   // município first — suburb/district are neighborhoods, not the city
@@ -87,17 +26,31 @@ function stateCodeFromNominatim(
   );
 }
 
+function locationFromNominatim(
+  a: Record<string, string | undefined>,
+): Address | null {
+  return buildAddress({
+    city: cityFromNominatim(a),
+    state: stateCodeFromNominatim(a),
+    stateLabel: a.state,
+    street: a.road ?? a.pedestrian ?? a.footway,
+    neighborhood: a.suburb ?? a.neighbourhood ?? a.quarter,
+    zipCode: a.postcode,
+    number: a.house_number,
+  });
+}
+
 async function locationFromCoords(
   lat: number,
   lon: number,
-): Promise<DetectedLocation | null> {
+): Promise<Address | null> {
   try {
     const url = new URL("https://nominatim.openstreetmap.org/reverse");
     url.searchParams.set("lat", String(lat));
     url.searchParams.set("lon", String(lon));
     url.searchParams.set("format", "json");
     url.searchParams.set("addressdetails", "1");
-    url.searchParams.set("zoom", "10");
+    url.searchParams.set("zoom", "18");
     url.searchParams.set("accept-language", "pt-BR");
 
     const res = await fetch(url.toString(), {
@@ -117,7 +70,20 @@ async function locationFromCoords(
     const a = data.address;
     if (!a) return null;
 
-    return buildLocation(cityFromNominatim(a), stateCodeFromNominatim(a), a.state);
+    return locationFromNominatim(a);
+  } catch {
+    return null;
+  }
+}
+
+async function locationFromCep(cep: string): Promise<Address | null> {
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return addressFromViaCep((await res.json()) as ViaCep);
   } catch {
     return null;
   }
@@ -125,11 +91,21 @@ async function locationFromCoords(
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const cep = digits(searchParams.get("cep") ?? "");
+
+  if (cep.length === 8) {
+    const detected = await locationFromCep(cep);
+    if (!detected) {
+      return NextResponse.json({ error: "not_found" }, { status: 422 });
+    }
+    return NextResponse.json(detected);
+  }
+
   const lat = Number(searchParams.get("lat"));
   const lon = Number(searchParams.get("lon"));
 
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-    return NextResponse.json({ error: "coords_required" }, { status: 400 });
+    return NextResponse.json({ error: "cep_or_coords_required" }, { status: 400 });
   }
 
   const detected = await locationFromCoords(lat, lon);

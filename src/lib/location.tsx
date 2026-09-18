@@ -9,27 +9,25 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { citiesByState } from "@/data/store";
+import { buildAddress, digits, type Address } from "@/lib/br-address";
 import { getStorePresence } from "@/lib/store-location";
 
-export type Location = {
-  state: string;
-  stateLabel: string;
-  city: string;
-};
+export type Location = Address;
 
 type StoredLocation = Location & { confirmed: boolean };
 
 type LocationContextValue = {
   location: Location | null;
   setLocation: (location: Location) => void;
-  acceptGps: () => Promise<boolean>;
+  detectGps: () => Promise<Location | null>;
+  lookupCep: (cep: string) => Promise<Location | null>;
   displayCity: string;
   displayState: string;
   address: string;
   distance: string;
   confirmed: boolean;
   detecting: boolean;
+  ready: boolean;
   modalOpen: boolean;
   openModal: () => void;
   closeModal: () => void;
@@ -46,10 +44,15 @@ const FALLBACK: Location = {
 const LocationContext = createContext<LocationContextValue | null>(null);
 
 function normalizeLocation(raw: Partial<Location> | null): Location {
-  const city = raw?.city?.trim() || FALLBACK.city;
-  const state = raw?.state?.trim().toUpperCase() || FALLBACK.state;
-  const stateLabel = raw?.stateLabel?.trim() || FALLBACK.stateLabel;
-  return { state, stateLabel, city };
+  return (
+    buildAddress(raw) ?? {
+      ...FALLBACK,
+      street: raw?.street?.trim() || undefined,
+      neighborhood: raw?.neighborhood?.trim() || undefined,
+      zipCode: digits(raw?.zipCode ?? "").slice(0, 8) || undefined,
+      number: raw?.number?.trim() || undefined,
+    }
+  );
 }
 
 function readStored(): StoredLocation | null {
@@ -71,10 +74,9 @@ function persistConfirmed(location: Location) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
 
-async function fetchCityFromApi(lat: number, lon: number): Promise<Location | null> {
+async function fetchLocation(qs: string): Promise<Location | null> {
   try {
-    const qs = `?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
-    const res = await fetch(`/api/location/city${qs}`, { cache: "no-store" });
+    const res = await fetch(`/api/location/city?${qs}`, { cache: "no-store" });
     if (!res.ok) return null;
     const data = (await res.json()) as Partial<Location>;
     if (!data.city?.trim()) return null;
@@ -94,9 +96,8 @@ function detectCityViaGeolocation(): Promise<Location | null> {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         resolve(
-          await fetchCityFromApi(
-            position.coords.latitude,
-            position.coords.longitude,
+          await fetchLocation(
+            `lat=${encodeURIComponent(position.coords.latitude)}&lon=${encodeURIComponent(position.coords.longitude)}`,
           ),
         );
       },
@@ -115,6 +116,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const [confirmed, setConfirmed] = useState(false);
   const [detecting, setDetecting] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const stored = readStored();
@@ -122,9 +124,8 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       setLocationState(normalizeLocation(stored));
       setConfirmed(true);
       setModalOpen(false);
-    } else {
-      setModalOpen(false);
     }
+    setReady(true);
   }, []);
 
   const setLocation = useCallback((next: Location) => {
@@ -135,17 +136,25 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     setModalOpen(false);
   }, []);
 
-  const acceptGps = useCallback(async () => {
+  const detectGps = useCallback(async () => {
     setDetecting(true);
     try {
-      const result = await detectCityViaGeolocation();
-      if (!result) return false;
-      setLocation(result);
-      return true;
+      return await detectCityViaGeolocation();
     } finally {
       setDetecting(false);
     }
-  }, [setLocation]);
+  }, []);
+
+  const lookupCep = useCallback(async (raw: string) => {
+    const cep = digits(raw);
+    if (cep.length !== 8) return null;
+    setDetecting(true);
+    try {
+      return await fetchLocation(`cep=${encodeURIComponent(cep)}`);
+    } finally {
+      setDetecting(false);
+    }
+  }, []);
 
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => {
@@ -163,13 +172,15 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     return {
       location: confirmed ? current : location,
       setLocation,
-      acceptGps,
+      detectGps,
+      lookupCep,
       displayCity: current.city,
       displayState: current.state,
       address: presence.address,
       distance: presence.distance,
       confirmed,
       detecting,
+      ready,
       modalOpen,
       openModal,
       closeModal,
@@ -178,9 +189,11 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     location,
     confirmed,
     detecting,
+    ready,
     modalOpen,
     setLocation,
-    acceptGps,
+    detectGps,
+    lookupCep,
     openModal,
     closeModal,
   ]);
@@ -195,5 +208,3 @@ export function useLocation() {
   if (!ctx) throw new Error("useLocation must be used within LocationProvider");
   return ctx;
 }
-
-export { citiesByState };
