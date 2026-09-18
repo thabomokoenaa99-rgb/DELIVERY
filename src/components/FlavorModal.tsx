@@ -19,6 +19,8 @@ import { formatBRL, type Product } from "@/data/store";
 type Props = {
   product: Product;
   onClose?: () => void;
+  flavors?: { id: string; name: string; description: string; price: number }[];
+  homeHref?: string;
 };
 
 function catalog(category: string) {
@@ -110,10 +112,16 @@ function catalog(category: string) {
   };
 }
 
-export function FlavorModal({ product, onClose }: Props) {
+export function FlavorModal({
+  product,
+  onClose,
+  flavors: flavorOverride,
+  homeHref = "/",
+}: Props) {
   const router = useRouter();
   const { addItem } = useCart();
   const cfg = catalog(product.category);
+  const flavorList = flavorOverride ?? cfg.flavors;
   const [query, setQuery] = useState("");
   const [prefId, setPrefId] = useState("");
   const [flavorIds, setFlavorIds] = useState<string[]>([]);
@@ -147,16 +155,16 @@ export function FlavorModal({ product, onClose }: Props) {
 
   const flavors = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return cfg.flavors;
-    return cfg.flavors.filter(
+    if (!q) return flavorList;
+    return flavorList.filter(
       (f) =>
         f.name.toLowerCase().includes(q) ||
         f.description.toLowerCase().includes(q),
     );
-  }, [cfg.flavors, query]);
+  }, [flavorList, query]);
 
   const selectedFlavors = flavorIds
-    .map((id) => cfg.flavors.find((f) => f.id === id))
+    .map((id) => flavorList.find((f) => f.id === id))
     .filter((f) => f != null);
   const pref = cfg.preference?.options.find((o) => o.id === prefId);
   const price = selectedFlavors.length
@@ -169,7 +177,7 @@ export function FlavorModal({ product, onClose }: Props) {
 
   function close() {
     if (onClose) onClose();
-    else router.push("/");
+    else router.push(homeHref);
   }
 
   function toggleFlavor(id: string) {

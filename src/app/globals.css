@@ -1105,3 +1105,122 @@ button.product-link {
     flex-wrap: wrap;
   }
 }
+
+.store-dominos {
+  --brand: #006491;
+  --brand-dark: #e31837;
+  --brand-soft: #e8f4fb;
+  --accent-purple: #e31837;
+  --accent-purple-bg: #ffe5e8;
+}
+
+.store-dominos .store-name {
+  font-family: var(--font-sans), "Poppins", sans-serif;
+  color: #006491;
+}
+
+.store-dominos #topo .logo img {
+  background: #006491;
+  padding: 10px;
+}
+
+.store-dominos .product-link.featured {
+  border-color: #e31837;
+}
+
+.store-dominos .product-link.pulsar {
+  animation: pulsar-dominos 1.8s ease-in-out infinite;
+}
+
+@keyframes pulsar-dominos {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(227, 24, 55, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(227, 24, 55, 0);
+  }
+}
+
+.dominos-coupon-backdrop {
+  z-index: 10050;
+}
+
+.dominos-coupon-card {
+  background: linear-gradient(180deg, #006491 0 92px, #fff 92px);
+  color: #222;
+}
+
+.dominos-coupon-logo {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 8px;
+  padding: 10px;
+  border-radius: 50%;
+  background: #006491;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dominos-coupon-kicker {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e31837;
+}
+
+.dominos-coupon-copy {
+  margin: 8px 0 16px;
+  color: #555;
+  font-size: 14px;
+}
+
+.dominos-coupon-code {
+  margin: 0 auto 16px;
+  padding: 8px 14px;
+  width: fit-content;
+  border: 2px dashed #006491;
+  border-radius: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #006491;
+}
+
+.store-dominos #topo .cover.main {
+  height: auto;
+  aspect-ratio: 390 / 188;
+  background-size: cover;
+  background-position: top center;
+}
+
+.dominos-coupon-card .modal-close {
+  color: #fff;
+}
+
+.dominos-coupon-card .btn-primary {
+  background: #e31837;
+}
+
+.dominos-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+
+.dominos-tile {
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f3f3f3;
+}
+
+.dominos-tile img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  object-fit: cover;
+}

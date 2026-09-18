@@ -5,6 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { formatBRL, storeConfig } from "@/data/store";
+import { dominosStore, isDominosProductId } from "@/data/dominos";
+import {
+  applyFirstOrderOff,
+  consumeDominosCoupon,
+  DOMINOS_COUPON_CODE,
+  useDominosCoupon,
+} from "@/lib/dominos-coupon";
 import { useCart } from "@/lib/cart";
 import { useLocation } from "@/lib/location";
 import {
@@ -72,6 +79,13 @@ function toQrImageSrc(value?: string | null): string | null {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, total, removeItem, clear } = useCart();
+  const { off } = useDominosCoupon();
+  const dominosSubtotal = items
+    .filter((item) => isDominosProductId(item.productId) && item.productId !== "dom-p1")
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const couponDiscount =
+    off > 0 ? dominosSubtotal - applyFirstOrderOff(dominosSubtotal) : 0;
+  const payTotal = Math.round((total - couponDiscount) * 100) / 100;
   const { displayCity, displayState } = useLocation();
   const [form, setForm] = useState<FormData>({
     ...emptyForm,
@@ -113,17 +127,17 @@ export default function CheckoutPage() {
     if (initiatedRef.current || items.length === 0) return;
     initiatedRef.current = true;
     trackInitiateCheckout({
-      value: total,
+      value: payTotal,
       numItems: pixelNumItems(),
       contents: pixelContents(),
     });
-  }, [items, total]);
+  }, [items, payTotal]);
 
   function markPurchasePaid(transactionId: string) {
     if (purchaseTrackedRef.current !== transactionId) {
       purchaseTrackedRef.current = transactionId;
       stashPendingPurchase({
-        value: total,
+        value: payTotal,
         numItems: pixelNumItems(),
         contents: pixelContents(),
         transactionId,
@@ -139,6 +153,7 @@ export default function CheckoutPage() {
       });
     }
     setPaid(true);
+    if (couponDiscount > 0) consumeDominosCoupon();
     clear();
     router.replace("/obrigado");
   }
@@ -237,7 +252,7 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: total,
+          amount: payTotal,
           items: items.map((item) => ({
             title: `${item.title} — ${item.details}`,
             unitPrice: item.price,
@@ -286,7 +301,7 @@ export default function CheckoutPage() {
         document: form.cpf,
       });
       trackAddPaymentInfo({
-        value: total,
+        value: payTotal,
         numItems: pixelNumItems(),
         contents: pixelContents(),
       });
@@ -304,13 +319,17 @@ export default function CheckoutPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  const brand = items.some((item) => isDominosProductId(item.productId))
+    ? dominosStore
+    : storeConfig;
+
   return (
-    <div className="checkout-page">
-      <Link href="/" className="back-link">
+    <div className={`checkout-page${brand === dominosStore ? " store-dominos" : ""}`}>
+      <Link href={brand === dominosStore ? "/dominos" : "/"} className="back-link">
         VOLTAR
       </Link>
       <h1>Finalizar pedido</h1>
-      <p className="checkout-subtitle">{storeConfig.name}</p>
+      <p className="checkout-subtitle">{brand.name}</p>
       <p className="delivery-eta">
         Tempo estimado de entrega: <strong>entre 20 e 30 minutos</strong>
       </p>
@@ -337,8 +356,18 @@ export default function CheckoutPage() {
                 </div>
               </div>
             ))}
+            {couponDiscount > 0 && (
+              <>
+                <p className="checkout-total">
+                  Subtotal: {formatBRL(total)}
+                </p>
+                <p className="checkout-total">
+                  Cupom {DOMINOS_COUPON_CODE}: −{formatBRL(couponDiscount)}
+                </p>
+              </>
+            )}
             <p className="checkout-total">
-              Total: <strong>{formatBRL(total)}</strong>
+              Total: <strong>{formatBRL(payTotal)}</strong>
             </p>
           </section>
 
@@ -450,7 +479,7 @@ export default function CheckoutPage() {
               className="btn-primary btn-block"
               disabled={loading}
             >
-              {loading ? "Gerando Pix..." : `Pagar ${formatBRL(total)} via Pix`}
+              {loading ? "Gerando Pix..." : `Pagar ${formatBRL(payTotal)} via Pix`}
             </button>
           </form>
         </>

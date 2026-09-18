@@ -5,25 +5,49 @@ import Link from "next/link";
 import { storeConfig } from "@/data/store";
 import { useLocation } from "@/lib/location";
 
-export function StoreHeader() {
+const defaultCategories = [
+  {
+    href: "/#pague-1-leve-2",
+    label: "Pague 1, Leve 2 Pizza + 1 Refrigerante 2 Litros",
+  },
+  { href: "/#pizza-individual", label: "Pizza Individual" },
+  { href: "/#sobremesa", label: "Sobremesa — Pizzas Doces" },
+  { href: "/#bebidas", label: "Bebidas" },
+  { href: "/#vinhos", label: "Vinhos" },
+];
+
+type Props = {
+  store?: typeof storeConfig;
+  banner?: string;
+  logo?: string;
+  categories?: { href: string; label: string }[];
+};
+
+export function StoreHeader({
+  store = storeConfig,
+  banner = "/images/banner.png",
+  logo = "/images/logo.png",
+  categories = defaultCategories,
+}: Props) {
   const { displayCity, displayState, distance, openModal } = useLocation();
 
   return (
     <header id="topo">
       <div
         className="cover main"
-        style={{ backgroundImage: "url(/images/banner.png)" }}
+        style={{ backgroundImage: `url(${banner})` }}
       >
         <div className="logo">
           <figure>
             <Image
-              src="/images/logo.png"
-              alt={storeConfig.name}
-              title={storeConfig.name}
+              src={logo}
+              alt={store.name}
+              title={store.name}
               width={96}
               height={96}
               preload
               quality={70}
+              unoptimized={logo.endsWith(".svg")}
             />
           </figure>
         </div>
@@ -38,13 +62,13 @@ export function StoreHeader() {
             </a>
           </div>
 
-          <h1 className="store-name">{storeConfig.name}</h1>
+          <h1 className="store-name">{store.name}</h1>
 
           <div className="detalhe">
             <span>
               <CoinsIcon /> Pedido Mínimo{" "}
               <b>
-                {storeConfig.minOrder.toLocaleString("pt-BR", {
+                {store.minOrder.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}
@@ -52,9 +76,9 @@ export function StoreHeader() {
             </span>
             <div>
               <span>
-                <BikeIcon /> <b>{storeConfig.deliveryTime}</b> min
+                <BikeIcon /> <b>{store.deliveryTime}</b> min
               </span>{" "}
-              • <span className="free">{storeConfig.deliveryFeeLabel}</span>
+              • <span className="free">{store.deliveryFeeLabel}</span>
             </div>
           </div>
 
@@ -72,13 +96,13 @@ export function StoreHeader() {
 
           <div className="detalhe">
             <StarIcon />
-            <b>{storeConfig.rating.toFixed(1).replace(".", ",")}</b> (
-            {storeConfig.reviewsRecent} avaliações)
+            <b>{store.rating.toFixed(1).replace(".", ",")}</b> (
+            {store.reviewsRecent} avaliações)
           </div>
 
           <div className="aberto">
             <span className="btn-pisca" />
-            <span>{storeConfig.status}</span>
+            <span>{store.status}</span>
           </div>
         </div>
       </div>
@@ -86,13 +110,11 @@ export function StoreHeader() {
       <div id="menuCategorias">
         <div className="container">
           <div className="categorias">
-            <Link href="/#pague-1-leve-2">
-              Pague 1, Leve 2 Pizza + 1 Refrigerante 2 Litros
-            </Link>
-            <Link href="/#pizza-individual">Pizza Individual</Link>
-            <Link href="/#sobremesa">Sobremesa — Pizzas Doces</Link>
-            <Link href="/#bebidas">Bebidas</Link>
-            <Link href="/#vinhos">Vinhos</Link>
+            {categories.map((cat) => (
+              <Link key={cat.href} href={cat.href}>
+                {cat.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useCart } from "@/lib/cart";
+import { applyFirstOrderOff, useDominosCoupon } from "@/lib/dominos-coupon";
+import { isDominosProductId } from "@/data/dominos";
 import { trackViewContent } from "@/lib/meta-pixel";
 import { trackTikTokSearch } from "@/lib/tiktok-pixel";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -15,7 +17,13 @@ import {
   type Product,
 } from "@/data/store";
 
-type Props = { product: Product };
+type Props = {
+  product: Product;
+  flavors?: { id: string; name: string; description: string }[];
+  drinks?: { id: string; name: string; description: string }[];
+  borders?: { id: string; name: string; description: string }[];
+  backHref?: string;
+};
 
 function OptionGroup({
   title,
@@ -76,9 +84,23 @@ function OptionGroup({
   );
 }
 
-export function ProductConfigurator({ product }: Props) {
+export function ProductConfigurator({
+  product,
+  flavors,
+  drinks: drinkOptions,
+  borders: borderOptions,
+  backHref = "/",
+}: Props) {
   const router = useRouter();
   const { addItem } = useCart();
+  const { off } = useDominosCoupon();
+  const payPrice =
+    isDominosProductId(product.id) && product.id !== "dom-p1" && off > 0
+      ? applyFirstOrderOff(product.price)
+      : product.price;
+  const menuFlavors = flavors ?? individualFlavors;
+  const menuDrinks = drinkOptions ?? drinks;
+  const menuBorders = borderOptions ?? borders;
   const [pizza1, setPizza1] = useState<string[]>([]);
   const [pizza2, setPizza2] = useState<string[]>([]);
   const [border, setBorder] = useState<string[]>([]);
@@ -96,17 +118,18 @@ export function ProductConfigurator({ product }: Props) {
 
   const savoryFlavors = useMemo(() => {
     const q = flavorQuery.trim().toLowerCase();
-    if (!q) return individualFlavors;
-    return individualFlavors.filter(
+    if (!q) return menuFlavors;
+    return menuFlavors.filter(
       (f) =>
         f.name.toLowerCase().includes(q) ||
         f.description.toLowerCase().includes(q),
     );
-  }, [flavorQuery]);
+  }, [flavorQuery, menuFlavors]);
 
   const isSimple = Boolean(product.simple);
   const hasDiscount =
-    typeof product.priceFrom === "number" && product.priceFrom > product.price;
+    (typeof product.priceFrom === "number" && product.priceFrom > payPrice) ||
+    payPrice < product.price;
 
   useEffect(() => {
     trackViewContent({
@@ -159,12 +182,12 @@ export function ProductConfigurator({ product }: Props) {
           .filter(Boolean)
           .join(" | ")
       : [
-          `Pizza 1: ${getOptionLabel(individualFlavors, pizza1)}`,
+          `Pizza 1: ${getOptionLabel(menuFlavors, pizza1)}`,
           product.pizzaCount > 1
-            ? `Pizza 2: ${getOptionLabel(individualFlavors, pizza2)}`
+            ? `Pizza 2: ${getOptionLabel(menuFlavors, pizza2)}`
             : null,
-          border.length ? `Borda: ${getOptionLabel(borders, border)}` : null,
-          `Bebida: ${getOptionLabel(drinks, drink)}`,
+          border.length ? `Borda: ${getOptionLabel(menuBorders, border)}` : null,
+          `Bebida: ${getOptionLabel(menuDrinks, drink)}`,
           note ? `Obs: ${note}` : null,
         ]
           .filter(Boolean)
@@ -181,7 +204,7 @@ export function ProductConfigurator({ product }: Props) {
 
   return (
     <div className="product-page">
-      <Link href="/" className="back-link">
+      <Link href={backHref} className="back-link">
         VOLTAR
       </Link>
 
@@ -199,12 +222,15 @@ export function ProductConfigurator({ product }: Props) {
         <p>{product.subtitle}</p>
         {hasDiscount ? (
           <p className="price-line">
-            de <span className="price-from">{formatBRL(product.priceFrom!)}</span>{" "}
-            por <b className="price-pill">{formatBRL(product.price)}</b>
+            de{" "}
+            <span className="price-from">
+              {formatBRL(product.priceFrom ?? product.price)}
+            </span>{" "}
+            por <b className="price-pill">{formatBRL(payPrice)}</b>
           </p>
         ) : (
           <p className="price-line">
-            <b className="price-pill">{formatBRL(product.price)}</b>
+            <b className="price-pill">{formatBRL(payPrice)}</b>
           </p>
         )}
         {product.stock != null && (
@@ -263,7 +289,7 @@ export function ProductConfigurator({ product }: Props) {
               title="Borda Recheada:"
               hint={`Escolha até ${product.borderMax} opções`}
               max={product.borderMax}
-              options={borders}
+              options={menuBorders}
               selected={border}
               strong
               onToggle={(id) =>
@@ -277,7 +303,7 @@ export function ProductConfigurator({ product }: Props) {
               title="Escolha seu refrigerante:"
               hint={`Escolha até ${Math.min(product.drinkCount, 1)} opção`}
               max={Math.min(product.drinkCount, 1) || 1}
-              options={drinks}
+              options={menuDrinks}
               selected={drink}
               onToggle={(id) =>
                 toggle(
@@ -304,7 +330,7 @@ export function ProductConfigurator({ product }: Props) {
       </label>
 
       <div className="sticky-bar">
-        <span>{formatBRL(ready ? product.price : 0)}</span>
+        <span>{formatBRL(ready ? payPrice : 0)}</span>
         <button type="button" disabled={!ready} onClick={finish}>
           FINALIZAR PEDIDO
         </button>
