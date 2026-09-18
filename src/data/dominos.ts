@@ -176,7 +176,7 @@ const img = (file: string) => `/images/dominos/${file}`;
 export const dominosProducts: Product[] = [
   {
     id: "dom-p1",
-    slug: "2-itens-a-sua-escolha-por-r-34-9-34.9",
+    slug: "2-itens-a-sua-escolha-por-r-34-9-34-9",
     category: "promocao",
     title: "2 itens à sua escolha por R$ 34,90 cada",
     subtitle: "2 itens à sua escolha por R$ 34,90 cada: Combine 8 sabores de pizza favoritos ou Pizza com 2 ingredientes ou Sanduíche de Chicken & Bacon ou Lasanha de Queijo & Presunto",
@@ -191,7 +191,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p2",
-    slug: "pizza-brotinho-refrigerante-lata-57.9",
+    slug: "pizza-brotinho-refrigerante-lata-57-9",
     category: "promocao",
     title: "Pizza Brotinho + Refrigerante Lata + 01 Colecionável",
     subtitle: "Pizza Brotinho + Refrigerante Lata + 01 Colecionável Surpresa Caverna do Dragão",
@@ -204,7 +204,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p3",
-    slug: "pizza-media-refrigerante-2l-brot-99.9",
+    slug: "pizza-media-refrigerante-2l-brot-99-9",
     category: "promocao",
     title: "Pizza Média + Refrigerante 2L + Brotinho Doce de Lei",
     subtitle: "Pizza Média + Refrigerante 2L + Brotinho Doce de Leite/Brigadeiro + 1 Colecionável Sortido Caverna do Dragão",
@@ -217,7 +217,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p4",
-    slug: "pizza-grande-r-44-90-cada-44.9",
+    slug: "pizza-grande-r-44-90-cada-44-9",
     category: "promocao",
     title: "PIZZA GRANDE R$44,90/CADA",
     subtitle: "PIZZA GRANDE R$44,90/CADA: Escolha 8 sabores favoritos ou ou monte sua pizza com 2 ingredientes.",
@@ -230,7 +230,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p5",
-    slug: "pizza-giga-r-54-90-cada-54.9",
+    slug: "pizza-giga-r-54-90-cada-54-9",
     category: "promocao",
     title: "PIZZA GIGA R$54,90/CADA",
     subtitle: "PIZZA GIGA R$54,90/CADA: Escolha 8 sabores favoritos ou monte sua pizza com 2 ingredientes.",
@@ -243,7 +243,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p6",
-    slug: "combo-medio-sabores-51.9",
+    slug: "combo-medio-sabores-51-9",
     category: "promocao",
     title: "Combo Médio Sabores",
     subtitle: "Combo Médio Sabores – Pizza Média, Mais Pedidas + Refri 500/600ml",
@@ -256,7 +256,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p7",
-    slug: "combo-grande-sabores-66.9",
+    slug: "combo-grande-sabores-66-9",
     category: "promocao",
     title: "Combo Grande Sabores",
     subtitle: "Combo Grande Sabores – Pizza Grande, Mais Pedidas + Refri 2L",
@@ -269,7 +269,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p8",
-    slug: "combo-giga-sabores-76.9",
+    slug: "combo-giga-sabores-76-9",
     category: "promocao",
     title: "Combo Giga Sabores",
     subtitle: "Combo Giga Sabores – Pizza Giga, Mais Pedidas + Refri 2L",
@@ -282,7 +282,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p9",
-    slug: "combo-duplo-116.9",
+    slug: "combo-duplo-116-9",
     category: "promocao",
     title: "Combo Duplo",
     subtitle: "Combo Duplo – 2 Pizzas Grandes, Mais Pedidas, + Refri 2L",
@@ -295,7 +295,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p10",
-    slug: "dominos-box-36.9",
+    slug: "dominos-box-36-9",
     category: "promocao",
     title: "Dominos Box",
     subtitle: "Dominos Box",
@@ -309,7 +309,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p11",
-    slug: "sanduiche-refrigerante-lata-ou-3-36.9",
+    slug: "sanduiche-refrigerante-lata-ou-3-36-9",
     category: "promocao",
     title: "Sanduíche + Refrigerante (Lata ou 300ml)",
     subtitle: "Sanduíche + Refrigerante (Lata ou 300ml)",
@@ -323,7 +323,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p12",
-    slug: "lasanha-qualquer-sabor-refrigera-36.9",
+    slug: "lasanha-qualquer-sabor-refrigera-36-9",
     category: "promocao",
     title: "Lasanha qualquer sabor + Refrigerante lata ou 300ml",
     subtitle: "Lasanha qualquer sabor + Refrigerante lata ou 300ml",
@@ -337,7 +337,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p13",
-    slug: "calzone-refrigerante-lata-ou-300-21.9",
+    slug: "calzone-refrigerante-lata-ou-300-21-9",
     category: "promocao",
     title: "Calzone + Refrigerante (Lata ou 300ml)",
     subtitle: "Calzone + Refrigerante (Lata ou 300ml)",
@@ -351,7 +351,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p14",
-    slug: "sabores-favoritos-pizza-media-41.9",
+    slug: "sabores-favoritos-pizza-media-41-9",
     category: "promocao",
     title: "Sabores Favoritos - Pizza Média",
     subtitle: "Sabores Favoritos - Pizza Média",
@@ -364,7 +364,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p15",
-    slug: "sabores-favoritos-pizza-grande-51.9",
+    slug: "sabores-favoritos-pizza-grande-51-9",
     category: "promocao",
     title: "Sabores Favoritos - Pizza Grande",
     subtitle: "Sabores Favoritos - Pizza Grande",
@@ -377,7 +377,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p16",
-    slug: "sabores-favoritos-pizza-grande-m-41.9",
+    slug: "sabores-favoritos-pizza-grande-m-41-9",
     category: "promocao",
     title: "Sabores Favoritos - Pizza Grande (massa super fina)",
     subtitle: "Sabores Favoritos - Pizza Grande (massa super fina)",
@@ -390,7 +390,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p17",
-    slug: "sabores-favoritos-pizza-gigante-61.9",
+    slug: "sabores-favoritos-pizza-gigante-61-9",
     category: "promocao",
     title: "Sabores Favoritos - Pizza Gigante",
     subtitle: "Sabores Favoritos - Pizza Gigante",
@@ -403,7 +403,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p18",
-    slug: "sabores-favoritos-pizza-gigante--51.9",
+    slug: "sabores-favoritos-pizza-gigante--51-9",
     category: "promocao",
     title: "Sabores Favoritos - Pizza Gigante (massa super fina)",
     subtitle: "Sabores Favoritos - Pizza Gigante (massa super fina)",
@@ -416,7 +416,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p19",
-    slug: "tradicional-ou-fina-2-ingredient-41.9",
+    slug: "tradicional-ou-fina-2-ingredient-41-9",
     category: "promocao",
     title: "Tradicional ou Fina + 2 ingredientes à sua escolha",
     subtitle: "Tradicional ou Fina + 2 ingredientes à sua escolha",
@@ -430,7 +430,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p20",
-    slug: "massa-pan-2-ingredientes-a-sua-e-48.9",
+    slug: "massa-pan-2-ingredientes-a-sua-e-48-9",
     category: "promocao",
     title: "Massa Pan + 2 ingredientes à sua escolha",
     subtitle: "Massa Pan + 2 ingredientes à sua escolha",
@@ -444,7 +444,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p21",
-    slug: "tradicional-ou-fina-2-ingredient-51.9",
+    slug: "tradicional-ou-fina-2-ingredient-51-9",
     category: "promocao",
     title: "Tradicional ou Fina + 2 ingredientes à sua escolha",
     subtitle: "Tradicional ou Fina + 2 ingredientes à sua escolha",
@@ -458,7 +458,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p22",
-    slug: "monte-sua-pizza-grande-massa-sup-41.9",
+    slug: "monte-sua-pizza-grande-massa-sup-41-9",
     category: "promocao",
     title: "Monte sua Pizza Grande - massa super fina, + 2 ingre",
     subtitle: "Monte sua Pizza Grande - massa super fina, + 2 ingredientes à sua escolha",
@@ -471,7 +471,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p23",
-    slug: "tradicional-ou-fina-2-ingredient-61.9",
+    slug: "tradicional-ou-fina-2-ingredient-61-9",
     category: "promocao",
     title: "Tradicional ou Fina + 2 ingredientes à sua escolha",
     subtitle: "Tradicional ou Fina + 2 ingredientes à sua escolha",
@@ -485,7 +485,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p24",
-    slug: "massa-super-fina-2-ingredientes--51.9",
+    slug: "massa-super-fina-2-ingredientes--51-9",
     category: "promocao",
     title: "Massa Super Fina + 2 ingredientes à sua escolha",
     subtitle: "Massa Super Fina + 2 ingredientes à sua escolha",
@@ -525,7 +525,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p27",
-    slug: "pizza-media-mais-pedidas-molho-r-71.9",
+    slug: "pizza-media-mais-pedidas-molho-r-71-9",
     category: "promocao",
     title: "Pizza Média (Mais Pedidas) + Molho + Refrigerante 2L",
     subtitle: "Pizza Média (Mais Pedidas) + Molho + Refrigerante 2L",
@@ -538,7 +538,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p28",
-    slug: "pizza-grande-massa-super-fina-re-56.9",
+    slug: "pizza-grande-massa-super-fina-re-56-9",
     category: "promocao",
     title: "Pizza Grande, massa Super Fina + Refri 2L",
     subtitle: "Pizza Grande, massa Super Fina + Refri 2L",
@@ -551,7 +551,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p29",
-    slug: "borda-recheada-catupiry-2-ingred-79.8",
+    slug: "borda-recheada-catupiry-2-ingred-79-8",
     category: "promocao",
     title: "Borda Recheada Catupiry® + 2 ingredientes + Refri 2L",
     subtitle: "Borda Recheada Catupiry® + 2 ingredientes + Refri 2L",
@@ -564,7 +564,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p30",
-    slug: "combo-amstel-pizza-media-massa-f-64.9",
+    slug: "combo-amstel-pizza-media-massa-f-64-9",
     category: "promocao",
     title: "Combo Amstel! Pizza Média (massa fina ou tradicional",
     subtitle: "Combo Amstel! Pizza Média (massa fina ou tradicional), categoria Clássicas + 2 Amstel",
@@ -577,7 +577,7 @@ export const dominosProducts: Product[] = [
   },
   {
     id: "dom-p31",
-    slug: "combo-heineken-pizza-media-massa-66.9",
+    slug: "combo-heineken-pizza-media-massa-66-9",
     category: "promocao",
     title: "Combo Heineken! Pizza Média (massa fina ou tradicion",
     subtitle: "Combo Heineken! Pizza Média (massa fina ou tradicional), categoria Clássicas + 2 Heineken (normal ou zero)",
@@ -1415,6 +1415,11 @@ export const dominosProducts: Product[] = [
     id: "dom-d1",
     slug: "pizza-biscoff",
     category: "sobremesa",
+    title: "Pizza doce Biscoff®",
+    subtitle: "Doce de leite coberta com pedaços crocantes do biscoito Biscoff®.",
+    price: 29.9,
+    simple: true,
+    startingAt: true,
     image: img("scrape-BISCOFF-SITE-5.webp"),
     pizzaCount: 0,
     drinkCount: 0,
@@ -1452,6 +1457,11 @@ export const dominosProducts: Product[] = [
     id: "dom-b2",
     slug: "heineken",
     category: "bebida",
+    title: "Heineken",
+    subtitle: "Cerveja Heineken, lata ou long neck.",
+    price: 12.9,
+    simple: true,
+    startingAt: true,
     image: img("scrape-heineken-18.webp"),
     pizzaCount: 0,
     drinkCount: 0,
@@ -1460,14 +1470,15 @@ export const dominosProducts: Product[] = [
 ];
 
 export const dominosCategories = [
-  { href: "/dominos#promocoes", label: "Promoções" },
   { href: "/dominos#pizzas", label: "Pizzas" },
   { href: "/dominos#acompanhamentos", label: "Acompanhamentos" },
+  { href: "/dominos#molhos", label: "Molhos" },
   { href: "/dominos#lasanhas", label: "Lasanhas" },
   { href: "/dominos#calzones", label: "Calzones" },
   { href: "/dominos#sanduiches", label: "Sanduíches" },
   { href: "/dominos#sobremesas", label: "Sobremesas" },
   { href: "/dominos#bebidas", label: "Bebidas" },
+  { href: "/dominos#promocoes", label: "Promoções" },
 ];
 
 export function getDominosProduct(category: string, slug: string) {

@@ -45,7 +45,7 @@ const LocationContext = createContext<LocationContextValue | null>(null);
 
 function normalizeLocation(raw: Partial<Location> | null): Location {
   return (
-    buildAddress(raw) ?? {
+    buildAddress(raw ?? {}) ?? {
       ...FALLBACK,
       street: raw?.street?.trim() || undefined,
       neighborhood: raw?.neighborhood?.trim() || undefined,

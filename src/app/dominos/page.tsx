@@ -82,7 +82,6 @@ export default function DominosPage() {
             ))}
           </div>
 
-          <Section id="promocoes" title="Promoções" products={promos} off={off} />
           <Section id="pizzas" title="Pizzas" products={by("pizza")} off={off} />
           <Section
             id="acompanhamentos"
@@ -90,6 +89,7 @@ export default function DominosPage() {
             products={by("acompanhamento")}
             off={off}
           />
+          <Section id="molhos" title="Molhos" products={by("molho")} off={off} />
           <Section id="lasanhas" title="Lasanhas" products={by("lasanha")} off={off} />
           <Section id="calzones" title="Calzones" products={by("calzone")} off={off} />
           <Section
@@ -105,6 +105,7 @@ export default function DominosPage() {
             off={off}
           />
           <Section id="bebidas" title="Bebidas" products={by("bebida")} off={off} />
+          <Section id="promocoes" title="Promoções" products={promos} off={off} />
         </div>
       </main>
 
