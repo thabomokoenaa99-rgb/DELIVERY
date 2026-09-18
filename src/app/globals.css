@@ -1195,6 +1195,15 @@ button.product-link {
   background-position: top center;
 }
 
+.store-dominos .product-hero-media {
+  background: #fff;
+}
+
+.store-dominos .product-hero-media img {
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
 .dominos-coupon-card .modal-close {
   color: #fff;
 }

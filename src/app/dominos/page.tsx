@@ -28,7 +28,7 @@ export default function DominosPage() {
     <>
       <StoreHeader
         store={dominosStore}
-        banner="/images/dominos/hero-2-medias.png"
+        banner="/images/dominos/banner-2-medias.webp"
         logo="/images/dominos/logo.svg"
         categories={dominosCategories}
       />
