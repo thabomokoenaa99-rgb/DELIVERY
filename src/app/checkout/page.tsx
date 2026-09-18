@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
@@ -328,20 +329,32 @@ export default function CheckoutPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const brand = items.some((item) => isDominosProductId(item.productId))
-    ? dominosStore
-    : storeConfig;
+  const isDominos = items.some((item) => isDominosProductId(item.productId));
+  const brand = isDominos ? dominosStore : storeConfig;
+  const logoSrc = isDominos
+    ? "/images/dominos/logo.svg"
+    : "/images/logo.png";
 
   return (
-    <div className={`checkout-page${brand === dominosStore ? " store-dominos" : ""}`}>
-      <Link href={brand === dominosStore ? "/dominos" : "/"} className="back-link">
+    <div className={`checkout-page${isDominos ? " store-dominos" : ""}`}>
+      <Link href={isDominos ? "/dominos" : "/"} className="back-link">
         VOLTAR
       </Link>
-      <h1>Finalizar pedido</h1>
-      <p className="checkout-subtitle">{brand.name}</p>
-      <p className="delivery-eta">
-        Tempo estimado de entrega: <strong>entre 20 e 30 minutos</strong>
-      </p>
+      <header className="checkout-head">
+        <Image
+          className="checkout-logo"
+          src={logoSrc}
+          alt={brand.name}
+          width={64}
+          height={64}
+          unoptimized={isDominos}
+        />
+        <h1>Finalizar pedido</h1>
+        <p className="checkout-subtitle">{brand.name}</p>
+        <p className="delivery-eta">
+          Tempo estimado de entrega: <strong>entre 20 e 30 minutos</strong>
+        </p>
+      </header>
 
       {items.length === 0 ? (
         <p>Seu carrinho está vazio.</p>

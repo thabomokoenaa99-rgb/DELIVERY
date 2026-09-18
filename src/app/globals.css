@@ -946,6 +946,43 @@ button.product-link {
 .legal-page h1,
 .checkout-page h1 {
   font-size: 22px;
+  line-height: 1.25;
+}
+
+.checkout-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 4px 0 8px;
+}
+
+.checkout-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  margin-bottom: 12px;
+}
+
+.checkout-head h1 {
+  margin: 0 0 14px;
+}
+
+.checkout-subtitle {
+  color: var(--brand);
+  font-family: var(--font-playfair), serif;
+  font-weight: 600;
+  margin: 0;
+}
+
+.delivery-eta {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #555;
 }
 
 .cart-line {
@@ -960,19 +997,6 @@ button.product-link {
   color: #777;
   display: block;
   margin-top: 4px;
-}
-
-.checkout-subtitle {
-  color: var(--brand);
-  font-family: var(--font-playfair), serif;
-  font-weight: 600;
-  margin-top: -8px;
-}
-
-.delivery-eta {
-  margin: 8px 0 0;
-  font-size: 14px;
-  color: #555;
 }
 
 .delivery-eta strong {
@@ -1120,6 +1144,14 @@ button.product-link {
   .cart-line {
     flex-wrap: wrap;
   }
+
+  .checkout-head h1 {
+    margin-bottom: 16px;
+  }
+
+  .delivery-eta {
+    margin-top: 12px;
+  }
 }
 
 .store-dominos {
@@ -1135,9 +1167,14 @@ button.product-link {
   color: #006491;
 }
 
-.store-dominos #topo .logo img {
+.store-dominos #topo .logo img,
+.store-dominos .checkout-logo {
   background: #006491;
   padding: 10px;
+}
+
+.store-dominos .checkout-subtitle {
+  font-family: var(--font-poppins), "Poppins", sans-serif;
 }
 
 .store-dominos .product-link.featured {
