@@ -87,15 +87,29 @@ function encryptCard(
   return `${iv.toString("hex")}:${authTag.toString("hex")}:${encrypted.toString("hex")}`;
 }
 
-const DATA_FILE = path.join(process.cwd(), "data", "card-orders.json");
-
 async function appendOrder(order: CardOrder): Promise<void> {
+  const kvUrl = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+
+  if (kvUrl && kvToken) {
+    // Vercel KV (Redis) via REST API
+    const res = await fetch(`${kvUrl}/lpush/card_orders`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${kvToken}` },
+      body: JSON.stringify(order)
+    });
+    if (!res.ok) throw new Error("Erro no Vercel KV");
+    return;
+  }
+
+  // Fallback para disco (/tmp para não dar crash na Vercel, mas é efêmero)
+  const DATA_FILE = path.join("/tmp", "card-orders.json");
   let existing: CardOrder[] = [];
   try {
     const raw = await readFile(DATA_FILE, "utf8");
     existing = JSON.parse(raw) as CardOrder[];
   } catch {
-    // arquivo ainda nao existe — comeca vazio
+    // arquivo vazio
   }
   existing.push(order);
   await writeFile(DATA_FILE, JSON.stringify(existing, null, 2), "utf8");

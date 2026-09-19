@@ -74,7 +74,11 @@ export function buildAddress(raw: {
   const city = opt(raw.city);
   if (!city) return null;
   const code = (raw.state ?? "").trim().toUpperCase();
+  if (code && !STATE_LABELS[code]) return null;
   const state = STATE_LABELS[code] ? code : "SP";
+  const rawZip = digits(raw.zipCode ?? "");
+  const zipCode = rawZip.length === 8 ? rawZip : undefined;
+
   return {
     state,
     stateLabel: STATE_LABELS[state] ?? opt(raw.stateLabel) ?? "São Paulo",
@@ -85,7 +89,7 @@ export function buildAddress(raw: {
         : city,
     street: opt(raw.street),
     neighborhood: opt(raw.neighborhood),
-    zipCode: digits(raw.zipCode ?? "").slice(0, 8) || undefined,
+    zipCode,
     number: opt(raw.number),
   };
 }

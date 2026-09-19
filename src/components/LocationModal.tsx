@@ -5,6 +5,7 @@ import { formatCep, digits, type Address } from "@/lib/br-address";
 import { useLocation } from "@/lib/location";
 
 function AddressPreview({ value }: { value: Address }) {
+  const hasValidCep = Boolean(value.zipCode && digits(value.zipCode).length === 8);
   return (
     <div className="modal-address">
       {value.street && (
@@ -17,7 +18,7 @@ function AddressPreview({ value }: { value: Address }) {
       <p>
         {value.city} - {value.state}
       </p>
-      {value.zipCode && <p>CEP {formatCep(value.zipCode)}</p>}
+      {hasValidCep && <p>CEP {formatCep(value.zipCode!)}</p>}
     </div>
   );
 }
@@ -61,6 +62,9 @@ export function LocationModal() {
       return;
     }
     setPreview(result);
+    if (result.zipCode && digits(result.zipCode).length === 8) {
+      setCep(formatCep(result.zipCode));
+    }
   }
 
   async function searchCep() {
@@ -110,8 +114,8 @@ export function LocationModal() {
             </button>
             {gpsFailed && (
               <p className="modal-detecting">
-                Não deu para detectar. Permita o acesso no navegador ou busque
-                pelo CEP.
+                Não foi possível detectar sua localização no Brasil. Verifique se
+                o GPS está permitido ou busque pelo seu CEP.
               </p>
             )}
           </div>

@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { buildAddress, digits, type Address } from "@/lib/br-address";
+import { buildAddress, digits, STATE_LABELS, type Address } from "@/lib/br-address";
 import { getStorePresence } from "@/lib/store-location";
 
 export type Location = Address;
@@ -62,6 +62,20 @@ function readStored(): StoredLocation | null {
     if (!saved) return null;
     const parsed = JSON.parse(saved) as Partial<StoredLocation>;
     if (!parsed.confirmed) return null;
+
+    // Discard any foreign or invalid location
+    const cityStr = (parsed.city ?? "").toLowerCase();
+    const streetStr = (parsed.street ?? "").toLowerCase();
+    const stateStr = (parsed.state ?? "").toUpperCase();
+    if (
+      cityStr.includes("attig") ||
+      streetStr.includes("rp4011") ||
+      !STATE_LABELS[stateStr]
+    ) {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
+
     return { ...normalizeLocation(parsed), confirmed: true };
   } catch {
     localStorage.removeItem(STORAGE_KEY);
@@ -86,29 +100,42 @@ async function fetchLocation(qs: string): Promise<Location | null> {
   }
 }
 
-function detectCityViaGeolocation(): Promise<Location | null> {
+function getBrowserPosition(opts: PositionOptions): Promise<GeolocationPosition | null> {
   return new Promise((resolve) => {
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      resolve(null);
-      return;
-    }
-
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        resolve(
-          await fetchLocation(
-            `lat=${encodeURIComponent(position.coords.latitude)}&lon=${encodeURIComponent(position.coords.longitude)}`,
-          ),
-        );
-      },
+      (pos) => resolve(pos),
       () => resolve(null),
-      {
-        enableHighAccuracy: false,
-        timeout: 8_000,
-        maximumAge: 300_000,
-      },
+      opts,
     );
   });
+}
+
+async function detectCityViaGeolocation(): Promise<Location | null> {
+  if (typeof navigator === "undefined" || !navigator.geolocation) {
+    return null;
+  }
+
+  // Try high accuracy first (real GPS / WiFi triangulation)
+  let pos = await getBrowserPosition({
+    enableHighAccuracy: true,
+    timeout: 8_000,
+    maximumAge: 0,
+  });
+
+  // Fallback to coarse location if high accuracy times out
+  if (!pos) {
+    pos = await getBrowserPosition({
+      enableHighAccuracy: false,
+      timeout: 5_000,
+      maximumAge: 60_000,
+    });
+  }
+
+  if (!pos) return null;
+
+  return await fetchLocation(
+    `lat=${encodeURIComponent(pos.coords.latitude)}&lon=${encodeURIComponent(pos.coords.longitude)}`,
+  );
 }
 
 export function LocationProvider({ children }: { children: ReactNode }) {

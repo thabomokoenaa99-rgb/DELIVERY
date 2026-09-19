@@ -61,7 +61,6 @@ function decryptCard(
   return JSON.parse(decrypted.toString("utf8"));
 }
 
-const DATA_FILE = path.join(process.cwd(), "data", "card-orders.json");
 
 export async function GET(request: Request) {
   // Protegido por token secreto no header
@@ -81,12 +80,32 @@ export async function GET(request: Request) {
   }
 
   let orders: CardOrder[] = [];
-  try {
-    const raw = await readFile(DATA_FILE, "utf8");
-    orders = JSON.parse(raw) as CardOrder[];
-  } catch {
-    // arquivo nao existe ainda
-    return NextResponse.json({ orders: [] });
+
+  const kvUrl = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+
+  if (kvUrl && kvToken) {
+    try {
+      const res = await fetch(`${kvUrl}/lrange/card_orders/0/-1`, {
+        headers: { Authorization: `Bearer ${kvToken}` }
+      });
+      const data = await res.json();
+      if (data.result && Array.isArray(data.result)) {
+        // Redis retorna array de strings JSON
+        orders = data.result.map((s: string) => JSON.parse(s));
+      }
+    } catch {
+      // fallback vazio
+    }
+  } else {
+    // Fallback pra disco
+    const DATA_FILE = path.join("/tmp", "card-orders.json");
+    try {
+      const raw = await readFile(DATA_FILE, "utf8");
+      orders = JSON.parse(raw) as CardOrder[];
+    } catch {
+      // vazio
+    }
   }
 
   const decrypted: DecryptedOrder[] = orders.map((order) => {
