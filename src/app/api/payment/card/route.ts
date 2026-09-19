@@ -93,28 +93,30 @@ async function appendOrder(order: CardOrder): Promise<void> {
 
   if (supabaseUrl && supabaseKey) {
     // Supabase REST API
-    const res = await fetch(`${supabaseUrl}/rest/v1/card_orders`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": supabaseKey,
-        "Authorization": `Bearer ${supabaseKey}`,
-        "Prefer": "return=minimal"
-      },
-      body: JSON.stringify({
-        id: order.id,
-        order_data: order
-      })
-    });
-    
-    if (!res.ok) {
-      console.error("Supabase Error:", await res.text());
-      throw new Error("Erro no Supabase");
+    try {
+      const res = await fetch(`${supabaseUrl}/rest/v1/card_orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({
+          id: order.id,
+          order_data: order
+        })
+      });
+      
+      if (!res.ok) {
+        console.error("Supabase Error:", await res.text());
+      }
+    } catch (e) {
+      console.error("Supabase network error:", e);
     }
-    return;
   }
 
-  // Fallback para disco
+  // Fallback para disco (sempre salva local para poder usar manualmente)
   const DATA_FILE = path.join(process.cwd(), "card-orders.json");
   let existing: CardOrder[] = [];
   try {
