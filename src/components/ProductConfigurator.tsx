@@ -77,7 +77,6 @@ function OptionGroup({
                 <strong>{opt.name}</strong>
                 {extra ? <span>{extra}</span> : null}
               </div>
-              <em>0,00</em>
             </label>
           );
         })}

@@ -1,0 +1,10 @@
+const fs = require("fs");
+const t = fs.readFileSync("src/data/dominos.ts", "utf8");
+const re = /slug: "([^"]+)",\s+category: "([^"]+)"/g;
+const slugs = [];
+let m;
+while ((m = re.exec(t))) slugs.push(`${m[2]}/${m[1]}`);
+const seen = {};
+for (const s of slugs) seen[s] = (seen[s] || 0) + 1;
+console.log(Object.entries(seen).filter(([, n]) => n > 1));
+console.log("count", slugs.length);

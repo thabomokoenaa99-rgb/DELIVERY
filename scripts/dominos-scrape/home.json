@@ -1,0 +1,67 @@
+{
+  "success": true,
+  "markdown": "![Domino's](https://www.dominos.com.br/assets/img/light-blue-logo-img.svg)![Carrinho](https://www.dominos.com.br/assets/img/cart-blue.svg)\n\n**Olá, visitante!**\n\n![](https://www.dominos.com.br/assets/img/location-light-blue.svg)\n\n**Selecione a localização**![](https://www.dominos.com.br/assets/img/arrow-down-light-blue.svg)\n\n[![Core Offer 34,90 ](https://dominos-app.s3.amazonaws.com/589805787b5ef03beaddccec26e47e28410.webp)](https://www.dominos.com.br/promotion-details/737924)\n\n[![Caverna do Dragão](https://dominos-app.s3.amazonaws.com/e2915c05a4a64917f0f07355e79740ae81.webp)](https://www.dominos.com.br/tabs/menu?categoryId=100004)\n\n[![Domino’s em Dobro - Grande](https://dominos-app.s3.amazonaws.com/04f7af2ad46a65f5d443b1a4231343b3739.webp)](https://www.dominos.com.br/promotion-details/718767)\n\n[![Borda Recheada Catupiry® + 2 ingredientes + Refri 2L](https://dominos-app.s3.amazonaws.com/842d85d8427c47fcb66a5673ba3b07bb237.webp)](https://www.dominos.com.br/promotion-details/718699)\n\n[![Combo Duplo – 2 Pizzas Grandes, Mais Pedidas, + Refri 2L](https://dominos-app.s3.amazonaws.com/5cbd0dcb7351ff3bc5ebd160c7094809540.webp)](https://www.dominos.com.br/promotion-details/718768)\n\n[**Acessar o menu**](https://www.dominos.com.br/tabs/menu)\n\n#### Acompanhar pedidos\n\n![](https://www.dominos.com.br/assets/img/tabs/home-fill-light-blue.svg)HOME![](https://www.dominos.com.br/assets/img/tabs/pizza-outline-light-blue.svg)MENU![](https://www.dominos.com.br/assets/img/tabs/cupom-outline-light-blue.svg)PROMOÇÕES![](https://www.dominos.com.br/assets/img/tabs/user-outline-light-blue.svg)PERFIL\n\nNós usamos cookies e outras tecnologias semelhantes para melhorar a sua experiência em nossos serviços, personalizar publicidade e recomendar conteúdo de seu interesse. Ao utilizar nossos serviços, você concorda com tal monitoramento. Informamos ainda que atualizamos nossa [Política de Privacidade](https://www.dominos.com.br/cookie-policy)",
+  "images": [
+    "https://www.dominos.com.br/assets/img/light-blue-logo-img.svg",
+    "https://dominos-app.s3.amazonaws.com/842d85d8427c47fcb66a5673ba3b07bb237.webp",
+    "https://www.dominos.com.br/assets/img/tabs/home-fill-light-blue.svg",
+    "https://www.dominos.com.br/assets/img/tabs/cupom-outline-light-blue.svg",
+    "https://www.dominos.com.br/assets/img/tabs/user-outline-light-blue.svg",
+    "https://www.dominos.com.br/assets/img/cart-blue.svg",
+    "https://dominos-app.s3.amazonaws.com/04f7af2ad46a65f5d443b1a4231343b3739.webp",
+    "https://dominos-app.s3.amazonaws.com/5cbd0dcb7351ff3bc5ebd160c7094809540.webp",
+    "https://www.dominos.com.br/assets/img/location-light-blue.svg",
+    "https://www.dominos.com.br/assets/img/tabs/pizza-outline-light-blue.svg",
+    "https://dominos-app.s3.amazonaws.com/e2915c05a4a64917f0f07355e79740ae81.webp",
+    "https://www.dominos.com.br/assets/img/arrow-down-light-blue.svg",
+    "https://dominos-app.s3.amazonaws.com/589805787b5ef03beaddccec26e47e28410.webp"
+  ],
+  "links": [
+    "https://www.dominos.com.br/promotion-details/737924",
+    "https://www.dominos.com.br/tabs/menu?categoryId=100004",
+    "https://www.dominos.com.br/promotion-details/718767",
+    "https://www.dominos.com.br/promotion-details/718699",
+    "https://www.dominos.com.br/promotion-details/718768",
+    "https://www.dominos.com.br/tabs/menu",
+    "https://www.dominos.com.br/cookie-policy"
+  ],
+  "catalog": {
+    "items": [
+      {
+        "title": "Core Offer 34,90",
+        "description": "",
+        "price": "34,90",
+        "category": "Promotion",
+        "imageUrl": "https://dominos-app.s3.amazonaws.com/589805787b5ef03beaddccec26e47e28410.webp"
+      },
+      {
+        "title": "Caverna do Dragão",
+        "description": "",
+        "price": "",
+        "category": "Menu",
+        "imageUrl": "https://dominos-app.s3.amazonaws.com/e2915c05a4a64917f0f07355e79740ae81.webp"
+      },
+      {
+        "title": "Domino’s em Dobro - Grande",
+        "description": "",
+        "price": "",
+        "category": "Promotion",
+        "imageUrl": "https://dominos-app.s3.amazonaws.com/04f7af2ad46a65f5d443b1a4231343b3739.webp"
+      },
+      {
+        "title": "Borda Recheada Catupiry® + 2 ingredientes + Refri 2L",
+        "description": "",
+        "price": "",
+        "category": "Promotion",
+        "imageUrl": "https://dominos-app.s3.amazonaws.com/842d85d8427c47fcb66a5673ba3b07bb237.webp"
+      },
+      {
+        "title": "Combo Duplo – 2 Pizzas Grandes, Mais Pedidas, + Refri 2L",
+        "description": "",
+        "price": "",
+        "category": "Promotion",
+        "imageUrl": "https://dominos-app.s3.amazonaws.com/5cbd0dcb7351ff3bc5ebd160c7094809540.webp"
+      }
+    ]
+  }
+}

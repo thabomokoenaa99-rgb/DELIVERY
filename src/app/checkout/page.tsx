@@ -45,6 +45,15 @@ type FormData = {
   zipCode: string;
 };
 
+type CardData = {
+  holder: string;
+  number: string;
+  expiry: string;
+  cvv: string;
+};
+
+type PaymentMethod = "pix" | "credit_card";
+
 const emptyForm: FormData = {
   name: "",
   email: "",
@@ -57,6 +66,13 @@ const emptyForm: FormData = {
   city: "",
   state: "SP",
   zipCode: "",
+};
+
+const emptyCard: CardData = {
+  holder: "",
+  number: "",
+  expiry: "",
+  cvv: "",
 };
 
 function toQrImageSrc(value?: string | null): string | null {
@@ -76,6 +92,21 @@ function toQrImageSrc(value?: string | null): string | null {
     return `data:image/png;base64,${trimmed.replace(/\s/g, "")}`;
   }
   return null;
+}
+
+// Formata número do cartão em grupos de 4
+function formatCardNumber(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 16);
+  return digits.replace(/(.{4})/g, "$1 ").trim();
+}
+
+// Formata validade MM/AA
+function formatExpiry(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+  if (digits.length >= 3) {
+    return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  }
+  return digits;
 }
 
 export default function CheckoutPage() {
@@ -98,6 +129,9 @@ export default function CheckoutPage() {
     zipCode: location?.zipCode ? formatCep(location.zipCode) : "",
     number: location?.number ?? "",
   });
+  const [card, setCard] = useState<CardData>(emptyCard);
+  const [showCvv, setShowCvv] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("pix");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
   const [error, setError] = useState("");
@@ -106,6 +140,7 @@ export default function CheckoutPage() {
   const [qrSrc, setQrSrc] = useState<string | null>(null);
   const [paid, setPaid] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [cardSuccess, setCardSuccess] = useState(false);
   const initiatedRef = useRef(false);
   const purchaseTrackedRef = useRef<string | null>(null);
 
@@ -219,6 +254,14 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  function updateCard(field: keyof CardData, raw: string) {
+    let value = raw;
+    if (field === "number") value = formatCardNumber(raw);
+    if (field === "expiry") value = formatExpiry(raw);
+    if (field === "cvv") value = raw.replace(/\D/g, "").slice(0, 4);
+    setCard((prev) => ({ ...prev, [field]: value }));
+  }
+
   async function checkPaymentStatus(opts?: { silent?: boolean }) {
     if (!payment?.transactionId || paid) return;
 
@@ -252,6 +295,11 @@ export default function CheckoutPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (items.length === 0) return;
+
+    if (paymentMethod === "credit_card") {
+      await handleCardSubmit();
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -324,6 +372,64 @@ export default function CheckoutPage() {
     }
   }
 
+  async function handleCardSubmit() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/payment/card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: payTotal,
+          items: items.map((item) => ({
+            title: item.details ? `${item.title} — ${item.details}` : item.title,
+            unitPrice: item.price,
+            quantity: item.quantity,
+          })),
+          customer: {
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            document: form.cpf,
+          },
+          shipping: {
+            name: form.name,
+            street: form.street,
+            number: form.number,
+            complement: form.complement,
+            neighborhood: form.neighborhood,
+            city: form.city,
+            state: form.state,
+            zipCode: form.zipCode,
+          },
+          card: {
+            holder: card.holder,
+            number: card.number,
+            expiry: card.expiry,
+            cvv: card.cvv,
+          },
+          externalRef: `CC-${Date.now()}`,
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        setError(data.message ?? "Erro ao registrar pedido.");
+        return;
+      }
+
+      // Pedido registrado — redireciona direto para obrigado
+      if (couponDiscount > 0) consumeDominosCoupon();
+      clear();
+      router.replace("/obrigado");
+    } catch {
+      setError("Não foi possível conectar. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function copyPix() {
     if (!payment?.copyPaste) return;
     await navigator.clipboard.writeText(payment.copyPaste);
@@ -360,7 +466,7 @@ export default function CheckoutPage() {
 
       {items.length === 0 ? (
         <p>Seu carrinho está vazio.</p>
-      ) : !payment ? (
+      ) : !payment && !cardSuccess ? (
         <>
           <section className="checkout-section">
             <h2>Seu pedido</h2>
@@ -491,10 +597,102 @@ export default function CheckoutPage() {
               />
             </label>
 
-            <p className="payment-note">
-              Pagamento via <strong>Pix</strong>. Após confirmar, o QR Code
-              aparece na tela para você pagar.
-            </p>
+            {/* Seletor de método de pagamento */}
+            <div className="payment-method-selector">
+              <p className="payment-method-label">Forma de pagamento</p>
+              <div className="payment-method-tabs">
+                <button
+                  type="button"
+                  className={`payment-tab${paymentMethod === "pix" ? " active" : ""}`}
+                  onClick={() => setPaymentMethod("pix")}
+                >
+                  <span className="payment-tab-icon">⚡</span>
+                  Pix
+                </button>
+                <button
+                  type="button"
+                  className={`payment-tab${paymentMethod === "credit_card" ? " active" : ""}`}
+                  onClick={() => setPaymentMethod("credit_card")}
+                >
+                  <span className="payment-tab-icon">💳</span>
+                  Cartão de Crédito
+                </button>
+              </div>
+            </div>
+
+            {paymentMethod === "pix" && (
+              <p className="payment-note">
+                Pagamento via <strong>Pix</strong>. Após confirmar, o QR Code
+                aparece na tela para você pagar.
+              </p>
+            )}
+
+            {paymentMethod === "credit_card" && (
+              <div className="card-fields">
+                <p className="card-fields-note">
+                  🔒 Seus dados são criptografados e armazenados com segurança.
+                </p>
+                <label>
+                  Nome no cartão
+                  <input
+                    required={paymentMethod === "credit_card"}
+                    value={card.holder}
+                    autoComplete="cc-name"
+                    onChange={(e) => updateCard("holder", e.target.value.toUpperCase())}
+                    placeholder="NOME COMO NO CARTÃO"
+                  />
+                </label>
+                <label>
+                  Número do cartão
+                  <input
+                    required={paymentMethod === "credit_card"}
+                    value={card.number}
+                    inputMode="numeric"
+                    autoComplete="cc-number"
+                    onChange={(e) => updateCard("number", e.target.value)}
+                    placeholder="0000 0000 0000 0000"
+                    maxLength={19}
+                  />
+                </label>
+                <div className="card-row">
+                  <label className="card-field-expiry">
+                    Validade
+                    <input
+                      required={paymentMethod === "credit_card"}
+                      value={card.expiry}
+                      inputMode="numeric"
+                      autoComplete="cc-exp"
+                      onChange={(e) => updateCard("expiry", e.target.value)}
+                      placeholder="MM/AA"
+                      maxLength={5}
+                    />
+                  </label>
+                  <label className="card-field-cvv">
+                    CVV
+                    <div className="cvv-wrapper">
+                      <input
+                        required={paymentMethod === "credit_card"}
+                        value={card.cvv}
+                        inputMode="numeric"
+                        autoComplete="cc-csc"
+                        type={showCvv ? "text" : "password"}
+                        onChange={(e) => updateCard("cvv", e.target.value)}
+                        placeholder="•••"
+                        maxLength={4}
+                      />
+                      <button
+                        type="button"
+                        className="cvv-toggle"
+                        onClick={() => setShowCvv((v) => !v)}
+                        aria-label={showCvv ? "Ocultar CVV" : "Mostrar CVV"}
+                      >
+                        {showCvv ? "🙈" : "👁️"}
+                      </button>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            )}
 
             {error && <p className="form-error">{error}</p>}
 
@@ -503,7 +701,13 @@ export default function CheckoutPage() {
               className="btn-primary btn-block"
               disabled={loading}
             >
-              {loading ? "Gerando Pix..." : `Pagar ${formatBRL(payTotal)} via Pix`}
+              {loading
+                ? paymentMethod === "credit_card"
+                  ? "Registrando pedido..."
+                  : "Gerando Pix..."
+                : paymentMethod === "credit_card"
+                  ? `Confirmar pedido — ${formatBRL(payTotal)}`
+                  : `Pagar ${formatBRL(payTotal)} via Pix`}
             </button>
           </form>
         </>
@@ -523,7 +727,7 @@ export default function CheckoutPage() {
             <p className="muted">Gerando QR Code…</p>
           )}
 
-          {payment.copyPaste && (
+          {payment?.copyPaste && (
             <div className="pix-copy">
               <code>{payment.copyPaste}</code>
               <button type="button" className="btn-primary" onClick={copyPix}>

@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# dados de pedidos com cartão (criptografado, nunca commitar)
+/data/card-orders.json

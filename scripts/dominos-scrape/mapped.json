@@ -1,0 +1,290 @@
+[
+  {
+    "title": "Caverna do Dragão",
+    "category": "Pizzas",
+    "description": "",
+    "image": ""
+  },
+  {
+    "title": "Meio a Meio",
+    "category": "Pizzas",
+    "description": "Peça sua pizza meio a meio com os sabores do nosso cardápio.",
+    "image": ""
+  },
+  {
+    "title": "Frango & Bacon",
+    "category": "Pizzas",
+    "description": "Frango desfiado, bacon, tomate, requeijão e orégano.",
+    "image": "/images/dominos/frango-bacon.webp"
+  },
+  {
+    "title": "Queijo Cremoso",
+    "category": "Pizzas",
+    "description": "Queijo, creme culinário e orégano.",
+    "image": "/images/dominos/queijo-cremoso.webp"
+  },
+  {
+    "title": "Queijo",
+    "category": "Pizzas",
+    "description": "Queijo e orégano.",
+    "image": "/images/dominos/queijo.webp"
+  },
+  {
+    "title": "Margherita",
+    "category": "Pizzas",
+    "description": "Queijo, tomate, orégano e manjericão.",
+    "image": "/images/dominos/margherita.webp"
+  },
+  {
+    "title": "Calabresa",
+    "category": "Pizzas",
+    "description": "Queijo, calabresa e cebola, orégano.",
+    "image": "/images/dominos/calabresa.webp"
+  },
+  {
+    "title": "Pepperoni",
+    "category": "Pizzas",
+    "description": "Queijo, orégano e pepperoni.",
+    "image": "/images/dominos/pepperoni.webp"
+  },
+  {
+    "title": "Frango com Requeijão Especial",
+    "category": "Pizzas",
+    "description": "Frango desfiado, cebola, orégano e requeijão",
+    "image": "/images/dominos/frango-com-requeijao-especial.webp"
+  },
+  {
+    "title": "Corn & Bacon",
+    "category": "Pizzas",
+    "description": "Queijo, bacon, orégano e milho.",
+    "image": "/images/dominos/corn-bacon.webp"
+  },
+  {
+    "title": "3 Queijos",
+    "category": "Pizzas",
+    "description": "Queijo, requeijão, orégano e parmesão ralado.",
+    "image": "/images/dominos/3-queijos.webp"
+  },
+  {
+    "title": "Napolitana",
+    "category": "Pizzas",
+    "description": "Queijo, tomate, orégano e parmesão ralado.",
+    "image": "/images/dominos/napolitana.webp"
+  },
+  {
+    "title": "4 Queijos",
+    "category": "Pizzas",
+    "description": "Queijo, requeijão, gorgonzola, orégano e parmesão ralado.",
+    "image": "/images/dominos/4-queijos.webp"
+  },
+  {
+    "title": "Catuperoni",
+    "category": "Pizzas",
+    "description": "Queijo, pepperoni, requeijão, orégano e parmesão ralado.",
+    "image": "/images/dominos/catuperoni.webp"
+  },
+  {
+    "title": "Pão De Alho",
+    "category": "Pizzas",
+    "description": "Queijo, pão ciabatta, pasta de alho, parmesão ralado e orégano.",
+    "image": "/images/dominos/pao-de-alho.webp"
+  },
+  {
+    "title": "Frango com Cream Cheese",
+    "category": "Pizzas",
+    "description": "Queijo, frango desfiado, Cream Cheese, orégano e parmesão ralado.",
+    "image": "/images/dominos/frango-com-cream-cheese.webp"
+  },
+  {
+    "title": "Frango Caipira",
+    "category": "Pizzas",
+    "description": "Queijo, frango desfiado, milho, catupiry e orégano.",
+    "image": "/images/dominos/frango-caipira.webp"
+  },
+  {
+    "title": "Calabresa Especial",
+    "category": "Pizzas",
+    "description": "Queijo, azeitona preta, calabresa, cebola, orégano e cream cheese.",
+    "image": "/images/dominos/calabresa-especial.webp"
+  },
+  {
+    "title": "Egg & Bacon",
+    "category": "Pizzas",
+    "description": "Queijo, bacon, cebola, cream cheese, orégano e ovo de codorna.",
+    "image": "/images/dominos/egg-bacon.webp"
+  },
+  {
+    "title": "Pepperrock",
+    "category": "Pizzas",
+    "description": "Queijo, pepperoni, azeitona preta, parmesão ralado, orégano, alho granulado e cream cheese.",
+    "image": "/images/dominos/pepperrock.webp"
+  },
+  {
+    "title": "La Bianca",
+    "category": "Pizzas",
+    "description": "Queijo, queijo de búfala e vaca, requeijão, parmesão ralado, orégano e manjericão.",
+    "image": "/images/dominos/la-bianca.webp"
+  },
+  {
+    "title": "Veggie®",
+    "category": "Pizzas",
+    "description": "Queijo, champignon, azeitona preta, cebola, orégano e pimentão verde",
+    "image": "/images/dominos/veggie.webp"
+  },
+  {
+    "title": "Portuguesa",
+    "category": "Pizzas",
+    "description": "Queijo, presunto, ovo de codorna, azeitona preta, cebola, orégano e pimentão verde.",
+    "image": "/images/dominos/portuguesa.webp"
+  },
+  {
+    "title": "Frango Grelhado",
+    "category": "Pizzas",
+    "description": "Queijo, frango, requeijão, tomate, azeitona preta, orégano e manjericão.",
+    "image": "/images/dominos/frango-grelhado.webp"
+  },
+  {
+    "title": "Meat & Bacon",
+    "category": "Pizzas",
+    "description": "Queijo, bacon, calabresa, pepperoni, orégano e presunto.",
+    "image": "/images/dominos/meat-bacon.webp"
+  },
+  {
+    "title": "Extravaganzza®",
+    "category": "Pizzas",
+    "description": "Queijo, pepperoni, presunto, azeitona preta, champignon, cebola, orégano e pimentão verde.",
+    "image": "/images/dominos/extravaganzza.webp"
+  },
+  {
+    "title": "Monte sua pizza",
+    "category": "Pizzas",
+    "description": "Monte sua pizza com todos os toppings que você deseja",
+    "image": "/images/dominos/monte-sua-pizza.webp"
+  },
+  {
+    "title": "Cheddar & Pepperoni",
+    "category": "Pizzas",
+    "description": "Queijo, molho sabor queijo cheddar, pepperoni e orégano.",
+    "image": "/images/dominos/cheddar-pepperoni.webp"
+  },
+  {
+    "title": "Cheddar & Bacon",
+    "category": "Pizzas",
+    "description": "Queijo, molho sabor queijo cheddar, bacon e orégano.",
+    "image": "/images/dominos/cheddar-bacon.webp"
+  },
+  {
+    "title": "Cheddar Volcano",
+    "category": "Acompanhamentos",
+    "description": "Queijo e molho sabor queijo cheddar.",
+    "image": "/images/dominos/cheddar-volcano.webp"
+  },
+  {
+    "title": "Alho Roll - 4 und.",
+    "category": "Acompanhamentos",
+    "description": "Entrada crocante com 4 unidades, feita de massa pan, recheada de alho e parmesão.",
+    "image": "/images/dominos/alho-roll-4-und.webp"
+  },
+  {
+    "title": "Alho Roll - 8 und.",
+    "category": "Acompanhamentos",
+    "description": "Entrada crocante com 8 unidades, feita de massa pan, recheada de alho e parmesão.",
+    "image": "/images/dominos/alho-roll-8-und.webp"
+  },
+  {
+    "title": "Chicken Roll - 4 und.",
+    "category": "Acompanhamentos",
+    "description": "Entrada crocante com 4 unidades, feita de massa pan, recheada de frango desfiado, queijo e molho de tomate, coberta de maionese grill, molho chipotle levemente apimentado e parmesão ralado.",
+    "image": "/images/dominos/chicken-roll-4-und.webp"
+  },
+  {
+    "title": "Chicken Roll - 8 und.",
+    "category": "Acompanhamentos",
+    "description": "Entrada crocante com 8 unidades, feita de massa pan, recheada de frango desfiado, queijo e molho de tomate, coberta de maionese grill, molho chipotle levemente apimentado e parmesão ralado.",
+    "image": "/images/dominos/chicken-roll-8-und.webp"
+  },
+  {
+    "title": "Cheesebread Calabresa",
+    "category": "Acompanhamentos",
+    "description": "Queijo, calabresa, cebola, parmesão ralado, requeijão e azeite.",
+    "image": "/images/dominos/cheesebread-calabresa.webp"
+  },
+  {
+    "title": "Cheesebread 4 Queijos",
+    "category": "Acompanhamentos",
+    "description": "Queijo, gorgonzola, parmesão ralado, requeijão e azeite",
+    "image": "/images/dominos/cheesebread-4-queijos.webp"
+  },
+  {
+    "title": "Cheesebread Margherita",
+    "category": "Acompanhamentos",
+    "description": "Queijo, tomate, requeijão, parmesão ralado, azeite e manjericão.",
+    "image": "/images/dominos/cheesebread-margherita.webp"
+  },
+  {
+    "title": "Molho sabor Queijo Cheddar",
+    "category": "Molhos",
+    "description": "Nosso queijo do tipo “melt” traz cor e sabor intensos e marcantes.",
+    "image": "/images/dominos/molho-sabor-queijo-cheddar.webp"
+  },
+  {
+    "title": "Maionese Grill",
+    "category": "Molhos",
+    "description": "Maionese temperada, perfeita para conferir aquele toque grelhado aos nossos produtos.",
+    "image": "/images/dominos/maionese-grill.webp"
+  },
+  {
+    "title": "CatupiryⓇ",
+    "category": "Molhos",
+    "description": "Requeijão cremoso da tradicional marca CatupiryⓇ Original, de sabor delicado e inconfundível.",
+    "image": "/images/dominos/catupiry.webp"
+  },
+  {
+    "title": "Molho Chipotle",
+    "category": "Molhos",
+    "description": "Molho à base de maionese sabor chipotle levemente picante.",
+    "image": "/images/dominos/molho-chipotle.webp"
+  },
+  {
+    "title": "Nutella®",
+    "category": "Molhos",
+    "description": "Creme de avelã Nutella®.",
+    "image": "/images/dominos/nutella.webp"
+  },
+  {
+    "title": "Cream Cheese",
+    "category": "Molhos",
+    "description": "Queijo cremoso, levemente ácido e com um toque de doçura, traz suavidade ao paladar.",
+    "image": "/images/dominos/cream-cheese.webp"
+  },
+  {
+    "title": "Pasta de Alho",
+    "category": "Molhos",
+    "description": "Irresistível e aromática, combina o sabor marcante do alho com um toque de cremosidade.",
+    "image": "/images/dominos/pasta-de-alho.webp"
+  },
+  {
+    "title": "Molho de Tomate",
+    "category": "Molhos",
+    "description": "Receita exclusiva da Domino’s, feita com tomates frescos e selecionados, de toque levemente adocicado.",
+    "image": "/images/dominos/molho-de-tomate.webp"
+  },
+  {
+    "title": "Chocolate",
+    "category": "Molhos",
+    "description": "Sabor inconfundivelmente doce com toque intenso e cremoso do brigadeiro.",
+    "image": "/images/dominos/chocolate.webp"
+  },
+  {
+    "title": "Doce de Leite",
+    "category": "Molhos",
+    "description": "A combinação perfeita entre a doçura suave do leite condensado e o sabor caramelizado do doce de leite com textura aveludada que derrete na boca.",
+    "image": "/images/dominos/doce-de-leite.webp"
+  },
+  {
+    "title": "OvomaltineⓇ",
+    "category": "Molhos",
+    "description": "Creme crocante da conceituada marca OvomaltineⓇ, com extrato de malte, cacau e avelã.",
+    "image": "/images/dominos/ovomaltine.webp"
+  }
+]
