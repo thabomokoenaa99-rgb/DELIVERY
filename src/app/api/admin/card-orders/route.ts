@@ -81,18 +81,20 @@ export async function GET(request: Request) {
 
   let orders: CardOrder[] = [];
 
-  const kvUrl = process.env.KV_REST_API_URL;
-  const kvToken = process.env.KV_REST_API_TOKEN;
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-  if (kvUrl && kvToken) {
+  if (supabaseUrl && supabaseKey) {
     try {
-      const res = await fetch(`${kvUrl}/lrange/card_orders/0/-1`, {
-        headers: { Authorization: `Bearer ${kvToken}` }
+      const res = await fetch(`${supabaseUrl}/rest/v1/card_orders?select=order_data`, {
+        headers: {
+          "apikey": supabaseKey,
+          "Authorization": `Bearer ${supabaseKey}`
+        }
       });
       const data = await res.json();
-      if (data.result && Array.isArray(data.result)) {
-        // Redis retorna array de strings JSON
-        orders = data.result.map((s: string) => JSON.parse(s));
+      if (Array.isArray(data)) {
+        orders = data.map((row: any) => row.order_data);
       }
     } catch {
       // fallback vazio

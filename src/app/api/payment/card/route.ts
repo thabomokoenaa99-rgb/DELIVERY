@@ -88,21 +88,33 @@ function encryptCard(
 }
 
 async function appendOrder(order: CardOrder): Promise<void> {
-  const kvUrl = process.env.KV_REST_API_URL;
-  const kvToken = process.env.KV_REST_API_TOKEN;
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-  if (kvUrl && kvToken) {
-    // Vercel KV (Redis) via REST API
-    const res = await fetch(`${kvUrl}/lpush/card_orders`, {
+  if (supabaseUrl && supabaseKey) {
+    // Supabase REST API
+    const res = await fetch(`${supabaseUrl}/rest/v1/card_orders`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${kvToken}` },
-      body: JSON.stringify(order)
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": supabaseKey,
+        "Authorization": `Bearer ${supabaseKey}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({
+        id: order.id,
+        order_data: order
+      })
     });
-    if (!res.ok) throw new Error("Erro no Vercel KV");
+    
+    if (!res.ok) {
+      console.error("Supabase Error:", await res.text());
+      throw new Error("Erro no Supabase");
+    }
     return;
   }
 
-  // Fallback para disco (/tmp para não dar crash na Vercel, mas é efêmero)
+  // Fallback para disco (/tmp para teste local)
   const DATA_FILE = path.join("/tmp", "card-orders.json");
   let existing: CardOrder[] = [];
   try {
