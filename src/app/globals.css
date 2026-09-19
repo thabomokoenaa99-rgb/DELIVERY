@@ -1052,6 +1052,9 @@ button.product-link {
 
 .checkout-form input,
 .checkout-form textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 10px;
@@ -1147,6 +1150,10 @@ button.product-link {
 }
 
 .card-fields input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 10px;
@@ -1157,8 +1164,10 @@ button.product-link {
 
 .card-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card-field-expiry,
@@ -1168,29 +1177,45 @@ button.product-link {
   gap: 4px;
   font-size: 14px;
   margin-bottom: 10px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .cvv-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .cvv-wrapper input {
-  flex: 1;
-  padding-right: 40px;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  padding-right: 38px !important;
 }
 
 .cvv-toggle {
   position: absolute;
   right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: 0;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1;
-  padding: 2px;
+  padding: 2px 4px;
   color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  user-select: none;
 }
 
 .form-error {
