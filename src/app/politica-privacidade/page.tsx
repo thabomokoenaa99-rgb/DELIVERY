@@ -10,18 +10,16 @@ export default function PrivacyPage() {
         </Link>
         <h1>Política de Privacidade</h1>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. É política desta
-          loja respeitar a sua privacidade em relação a qualquer informação que
-          possamos coletar no site.
+          Pedimos nome, telefone, e-mail e endereço só para entregar o pedido e
+          confirmar o pagamento.
         </p>
         <p>
-          Solicitamos informações pessoais apenas quando realmente precisamos delas
-          para lhe fornecer um serviço. Fazemo-lo por meios justos e legais, com o
-          seu conhecimento e consentimento.
+          Não vendemos seus dados. Só compartilhamos o necessário com o meio de
+          pagamento (Pix) ou quando a lei exigir.
         </p>
         <p>
-          Não compartilhamos informações de identificação pessoal publicamente ou
-          com terceiros, exceto quando exigido por lei.
+          Usamos cookies para lembrar preferências e melhorar o site. Ao
+          continuar, você concorda com esta política.
         </p>
       </div>
       <SiteFooter />

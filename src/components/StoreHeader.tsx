@@ -8,7 +8,7 @@ import { useLocation } from "@/lib/location";
 const defaultCategories = [
   {
     href: "/#pague-1-leve-2",
-    label: "Pague 1, Leve 2 Pizza + 1 Refrigerante 2 Litros",
+    label: "Pague 1, Leve 2",
   },
   { href: "/#pizza-individual", label: "Pizza Individual" },
   { href: "/#sobremesa", label: "Sobremesa — Pizzas Doces" },
@@ -97,7 +97,7 @@ export function StoreHeader({
           <div className="detalhe">
             <StarIcon />
             <b>{store.rating.toFixed(1).replace(".", ",")}</b> (
-            {store.reviewsRecent} avaliações)
+            {store.reviewsRecent.toLocaleString("pt-BR")} avaliações)
           </div>
 
           <div className="aberto">

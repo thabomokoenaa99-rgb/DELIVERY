@@ -9,7 +9,7 @@ export function ReviewsSection() {
         <div className="stars" aria-hidden>
           {"★★★★★"}
         </div>
-        <b>{storeConfig.reviewsRecent} avaliações</b> • últimos 90 dias
+        <b>{storeConfig.reviewsRecent.toLocaleString("pt-BR")} avaliações</b> • últimos 90 dias
         <br />
         <span className="muted">{storeConfig.reviewsTotal.toLocaleString("pt-BR")} avaliações no total</span>
       </div>

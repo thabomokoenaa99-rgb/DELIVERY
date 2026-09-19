@@ -14,6 +14,7 @@ import {
   drinks,
   formatBRL,
   getOptionLabel,
+  uniqueCopy,
   type Product,
 } from "@/data/store";
 
@@ -60,6 +61,7 @@ function OptionGroup({
         {options.map((opt) => {
           const checked = selected.includes(opt.id);
           const disabled = !checked && selected.length >= max;
+          const extra = uniqueCopy(opt.name, opt.description);
           return (
             <label
               key={opt.id}
@@ -73,7 +75,7 @@ function OptionGroup({
               />
               <div>
                 <strong>{opt.name}</strong>
-                <span>{opt.description}</span>
+                {extra ? <span>{extra}</span> : null}
               </div>
               <em>0,00</em>
             </label>
@@ -127,6 +129,7 @@ export function ProductConfigurator({
   }, [flavorQuery, menuFlavors]);
 
   const isSimple = Boolean(product.simple);
+  const extra = uniqueCopy(product.title, product.subtitle);
   const hasDiscount =
     (typeof product.priceFrom === "number" && product.priceFrom > payPrice) ||
     payPrice < product.price;
@@ -178,9 +181,7 @@ export function ProductConfigurator({
     if (!ready) return;
 
     const details = isSimple
-      ? [product.subtitle, note ? `Obs: ${note}` : null]
-          .filter(Boolean)
-          .join(" | ")
+      ? [extra, note ? `Obs: ${note}` : null].filter(Boolean).join(" | ")
       : [
           `Pizza 1: ${getOptionLabel(menuFlavors, pizza1)}`,
           product.pizzaCount > 1
@@ -219,7 +220,7 @@ export function ProductConfigurator({
           />
         </div>
         <h2>{product.title}</h2>
-        <p>{product.subtitle}</p>
+        {extra ? <p>{extra}</p> : null}
         {hasDiscount ? (
           <p className="price-line">
             de{" "}

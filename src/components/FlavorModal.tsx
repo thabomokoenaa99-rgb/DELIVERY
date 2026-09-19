@@ -14,7 +14,7 @@ import {
 } from "@/data/beverages";
 import { dessertFlavors, dessertPreferences } from "@/data/dessert-flavors";
 import { individualFlavors } from "@/data/individual-flavors";
-import { formatBRL, type Product } from "@/data/store";
+import { formatBRL, uniqueCopy, type Product } from "@/data/store";
 
 type Props = {
   product: Product;
@@ -30,11 +30,11 @@ function catalog(category: string) {
       searchLabel: "Buscar sabor",
       preference: {
         title: "Escolha sua preferência",
-        hint: "Escolha pelo menos 1 e no máximo 1 opção.",
+        hint: "Escolha 1 opção.",
         options: dessertPreferences,
       },
       flavorTitle: "Escolha os sabores",
-      flavorHint: "Escolha pelo menos 1 e no máximo 2 opções.",
+      flavorHint: "Escolha até 2 opções.",
       flavorMax: 2,
       flavors: dessertFlavors,
       itemLabel: "Sabor",
@@ -122,6 +122,7 @@ export function FlavorModal({
   const { addItem } = useCart();
   const cfg = catalog(product.category);
   const flavorList = flavorOverride ?? cfg.flavors;
+  const extra = uniqueCopy(product.title, product.subtitle);
   const [query, setQuery] = useState("");
   const [prefId, setPrefId] = useState("");
   const [flavorIds, setFlavorIds] = useState<string[]>([]);
@@ -229,7 +230,7 @@ export function FlavorModal({
               className={product.imageContain ? "photo-contain" : undefined}
             />
             <h2>{product.title}</h2>
-            <p>{product.subtitle}</p>
+            {extra ? <p>{extra}</p> : null}
           </div>
 
           {cfg.preference && (
@@ -254,7 +255,9 @@ export function FlavorModal({
                       />
                       <div>
                         <strong>{opt.name}</strong>
-                        <span>{opt.description}</span>
+                        {uniqueCopy(opt.name, opt.description) ? (
+                          <span>{uniqueCopy(opt.name, opt.description)}</span>
+                        ) : null}
                       </div>
                     </label>
                   );
@@ -300,7 +303,9 @@ export function FlavorModal({
                     />
                     <div>
                       <strong>{opt.name}</strong>
-                      <span>{opt.description}</span>
+                      {uniqueCopy(opt.name, opt.description) ? (
+                        <span>{uniqueCopy(opt.name, opt.description)}</span>
+                      ) : null}
                     </div>
                     <em>{formatBRL(opt.price)}</em>
                   </label>
@@ -327,7 +332,7 @@ export function FlavorModal({
         <div className="flavor-modal-footer">
           <span>{formatBRL(ready ? price : 0)}</span>
           <button type="button" disabled={!ready} onClick={add}>
-            ADICIONAR • {formatBRL(ready ? price : 0)}
+            ADICIONAR
           </button>
         </div>
       </div>

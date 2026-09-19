@@ -308,6 +308,17 @@ button.product-link {
   margin: 0;
   font-size: 15px;
   font-weight: 700;
+  line-height: 1.3;
+}
+
+.product-text .subtitle {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .badge-bestseller {
@@ -806,6 +817,23 @@ button.product-link {
   margin-bottom: 20px;
 }
 
+.product-hero h2 {
+  margin: 0 8px 8px;
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.product-hero > p {
+  margin: 0 12px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #555;
+}
+
+.product-hero .price-line {
+  margin: 0 8px;
+}
+
 .product-hero-media {
   margin: 0 -12px 14px;
   overflow: hidden;
@@ -1141,6 +1169,10 @@ button.product-link {
     padding: 12px;
   }
 
+  .option-group-strong h3 {
+    font-size: 18px;
+  }
+
   .cart-line {
     flex-wrap: wrap;
   }
@@ -1151,6 +1183,41 @@ button.product-link {
 
   .delivery-eta {
     margin-top: 12px;
+  }
+
+  .product-link {
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .product-photo figure,
+  .product-photo img {
+    width: 88px;
+    height: 88px;
+  }
+
+  .product-hero-media img,
+  .store-dominos .product-hero-media img {
+    aspect-ratio: 16 / 10;
+    max-height: 220px;
+    margin: 0 auto;
+    object-fit: contain;
+  }
+
+  .store-dominos #topo .cover.main {
+    aspect-ratio: 16 / 9;
+  }
+
+  .sticky-bar {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  #cookie-consent {
+    left: 12px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    flex-wrap: wrap;
   }
 }
 

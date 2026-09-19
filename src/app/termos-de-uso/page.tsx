@@ -17,10 +17,10 @@ export default function TermsPage() {
           Se você não concordar com algum desses termos, está proibido de usar ou
           acessar este site.
         </p>
-        <h2>1. Uso de Licença</h2>
+        <h2>1. Uso do site</h2>
         <p>
-          É concedida permissão para visualizar os materiais deste site apenas para
-          uso pessoal e não comercial.
+          Você pode usar este site para fazer pedidos pessoais. Não use o
+          conteúdo para fins comerciais sem autorização.
         </p>
       </div>
       <SiteFooter />

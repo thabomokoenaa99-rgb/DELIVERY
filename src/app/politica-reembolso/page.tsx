@@ -10,13 +10,12 @@ export default function RefundPage() {
         </Link>
         <h1>Política de Reembolso</h1>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Em caso de
-          problemas com o seu pedido, entre em contato com o atendimento no momento
-          do recebimento.
+          Se o pedido chegar errado ou com problema, avise no momento da
+          entrega ou pelo WhatsApp da loja.
         </p>
         <p>
-          Avaliaremos cada solicitação de forma individual e responderemos no menor
-          prazo possível.
+          Analisamos cada caso. Quando o reembolso for aprovado, o valor volta
+          pelo mesmo Pix usado no pagamento.
         </p>
       </div>
       <SiteFooter />

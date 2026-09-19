@@ -44,8 +44,8 @@ export const storeConfig = {
   deliveryTime: "20-30",
   deliveryFeeLabel: "Grátis",
   rating: 4.8,
-  reviewsRecent: 136,
-  reviewsTotal: 1007,
+  reviewsRecent: 12890,
+  reviewsTotal: 12890,
   distance: "1,6km de você",
   city: "Jardim Maria Estela",
   state: "SP",
@@ -127,7 +127,7 @@ export const products: Product[] = [
     id: "p1",
     slug: "pizza1",
     category: "pizza",
-    title: "2 Pizza PP + 1 Refrigerante 2 Litros",
+    title: "2 Pizzas PP + 1 Refrigerante 2L",
     subtitle: "Borda Recheada Grátis",
     priceFrom: 40,
     price: 32.9,
@@ -140,7 +140,7 @@ export const products: Product[] = [
     id: "p2",
     slug: "pizza2",
     category: "pizza",
-    title: "2 Pizza P + 1 Refrigerante 2 Litros",
+    title: "2 Pizzas P + 1 Refrigerante 2L",
     subtitle: "Borda Recheada Grátis",
     priceFrom: 63.8,
     price: 42.9,
@@ -153,7 +153,7 @@ export const products: Product[] = [
     id: "p3",
     slug: "pizza3",
     category: "pizza",
-    title: "2 Pizza M + 1 Refrigerante 2 Litros",
+    title: "2 Pizzas M + 1 Refrigerante 2L",
     subtitle: "Borda Recheada Grátis",
     priceFrom: 73.8,
     price: 55.9,
@@ -172,7 +172,7 @@ export const products: Product[] = [
     id: "p4",
     slug: "pizza4",
     category: "pizza",
-    title: "2 Pizza G + 1 Refrigerante 2 Litros",
+    title: "2 Pizzas G + 1 Refrigerante 2L",
     subtitle: "Borda Recheada Grátis",
     priceFrom: 123.8,
     price: 75.9,
@@ -185,7 +185,7 @@ export const products: Product[] = [
     id: "p5",
     slug: "pizza5",
     category: "pizza",
-    title: "2 Pizza Gigante + 2 Refrigerante 2 Litros",
+    title: "2 Pizzas Gigante + 2 Refrigerantes 2L",
     subtitle: "Borda Recheada Grátis",
     priceFrom: 159.8,
     price: 98.9,
@@ -317,7 +317,7 @@ export const reviews = [
     id: "r1",
     name: "Laysa",
     rating: 5,
-    text: "Melhor pizzaria da região! Aproveitei a promoção e saí muito satisfeito. Pizza saborosa e ainda ganhei um refrigerante de 2L!",
+    text: "Melhor pizzaria da região! Aproveitei a promoção e saí muito satisfeita. Pizza saborosa e ainda ganhei um refrigerante de 2L!",
     image: "/images/prova1.jpg",
   },
   {
@@ -383,6 +383,29 @@ export function formatBRL(value: number) {
     style: "currency",
     currency: "BRL",
   });
+}
+
+/** Hide body copy that only repeats the headline. */
+export function uniqueCopy(title: string, extra: string) {
+  const t = title.trim();
+  const s = extra.trim();
+  if (!s || s === t) return "";
+  if (
+    s.startsWith(`${t}:`) ||
+    s.startsWith(`${t} –`) ||
+    s.startsWith(`${t} —`)
+  ) {
+    return s.slice(t.length).replace(/^[\s:–—-]+/, "").trim();
+  }
+  return s;
+}
+
+if (
+  uniqueCopy("A", "A") !== "" ||
+  uniqueCopy("A", "A: B") !== "B" ||
+  uniqueCopy("Queijo", "Queijo e orégano.") !== "Queijo e orégano."
+) {
+  throw new Error("uniqueCopy: repetição de título não filtrada");
 }
 
 export function getProduct(category: string, slug: string) {

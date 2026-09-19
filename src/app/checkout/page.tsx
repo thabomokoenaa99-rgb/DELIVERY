@@ -264,7 +264,9 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           amount: payTotal,
           items: items.map((item) => ({
-            title: `${item.title} — ${item.details}`,
+            title: item.details
+              ? `${item.title} — ${item.details}`
+              : item.title,
             unitPrice: item.price,
             quantity: item.quantity,
           })),
@@ -368,7 +370,7 @@ export default function CheckoutPage() {
                   <strong>
                     {item.quantity}x {item.title}
                   </strong>
-                  <small>{item.details}</small>
+                  {item.details ? <small>{item.details}</small> : null}
                 </div>
                 <div>
                   <div>{formatBRL(item.price * item.quantity)}</div>

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { formatBRL, type Product } from "@/data/store";
+import { formatBRL, uniqueCopy, type Product } from "@/data/store";
 import { applyFirstOrderOff } from "@/lib/dominos-coupon";
 
 type Props = {
@@ -26,6 +26,7 @@ export function ProductCard({
     (typeof product.priceFrom === "number" && product.priceFrom > payPrice) ||
     payPrice < product.price;
   const className = `product-link ${product.featured ? "featured pulsar" : ""}`;
+  const extra = uniqueCopy(product.title, product.subtitle);
 
   const inner = (
     <>
@@ -36,7 +37,7 @@ export function ProductCard({
           </span>
         )}
         <h3>{product.title}</h3>
-        <span className="subtitle">{product.subtitle}</span>
+        {extra ? <span className="subtitle">{extra}</span> : null}
         {product.note && <span className="note-chip">{product.note}</span>}
         {product.startingAt ? (
           <span className="price">A partir de {formatBRL(payPrice)}</span>
