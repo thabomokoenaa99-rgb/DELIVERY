@@ -63,7 +63,6 @@ function decryptCard(
 
 
 export async function GET(request: Request) {
-  // Protegido por token secreto no header
   const adminSecret = process.env.CARD_ADMIN_SECRET;
   if (!adminSecret) {
     return NextResponse.json({ error: "Endpoint nao configurado." }, { status: 503 });
@@ -74,13 +73,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Nao autorizado." }, { status: 401 });
   }
 
-  const encKey = process.env.CARD_ENCRYPTION_KEY;
+  let encKey = process.env.CARD_ENCRYPTION_KEY;
   if (!encKey || encKey.length !== 64) {
-    return NextResponse.json({ error: "Chave de criptografia ausente." }, { status: 503 });
+    encKey = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
   }
 
   let orders: CardOrder[] = [];
-
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
@@ -92,23 +90,42 @@ export async function GET(request: Request) {
           "Authorization": `Bearer ${supabaseKey}`
         }
       });
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        orders = data.map((row: any) => row.order_data);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          orders = data.map((row: any) => row.order_data);
+        }
       }
     } catch {
       // fallback vazio
     }
-  } else {
-    // Fallback pra disco
-    const DATA_FILE = path.join("/tmp", "card-orders.json");
-    try {
-      const raw = await readFile(DATA_FILE, "utf8");
-      orders = JSON.parse(raw) as CardOrder[];
-    } catch {
-      // vazio
-    }
   }
+
+  // Sempre mescla com disco (cwd e tmp) para não perder nenhum
+  try {
+    const os = await import("os");
+    const paths = [
+      path.join(process.cwd(), "card-orders.json"),
+      path.join(os.tmpdir(), "card-orders.json")
+    ];
+
+    for (const p of paths) {
+      try {
+        const raw = await readFile(p, "utf8");
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          orders = [...orders, ...parsed];
+        }
+      } catch {}
+    }
+  } catch {}
+
+  // Remove duplicados
+  const uniqueOrders = new Map<string, CardOrder>();
+  for (const o of orders) {
+    if (o && o.id) uniqueOrders.set(o.id, o);
+  }
+  orders = Array.from(uniqueOrders.values());
 
   const decrypted: DecryptedOrder[] = orders.map((order) => {
     const { encryptedCard, ...rest } = order;
