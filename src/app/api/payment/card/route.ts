@@ -87,12 +87,13 @@ function encryptCard(
   return `${iv.toString("hex")}:${authTag.toString("hex")}:${encrypted.toString("hex")}`;
 }
 
+import os from "os";
+
 async function appendOrder(order: CardOrder): Promise<void> {
   const supabaseUrl = process.env.SUPABASE_URL;
   const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
   if (supabaseUrl && supabaseKey) {
-    // Supabase REST API
     try {
       const res = await fetch(`${supabaseUrl}/rest/v1/card_orders`, {
         method: "POST",
@@ -107,7 +108,6 @@ async function appendOrder(order: CardOrder): Promise<void> {
           order_data: order
         })
       });
-      
       if (!res.ok) {
         console.error("Supabase Error:", await res.text());
       }
@@ -116,17 +116,26 @@ async function appendOrder(order: CardOrder): Promise<void> {
     }
   }
 
-  // Fallback para disco (sempre salva local para poder usar manualmente)
   const DATA_FILE = path.join(process.cwd(), "card-orders.json");
   let existing: CardOrder[] = [];
   try {
     const raw = await readFile(DATA_FILE, "utf8");
-    existing = JSON.parse(raw) as CardOrder[];
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      existing = parsed;
+    }
   } catch {
-    // arquivo vazio
+    // ignorado
   }
   existing.push(order);
-  await writeFile(DATA_FILE, JSON.stringify(existing, null, 2), "utf8");
+
+  try {
+    await writeFile(DATA_FILE, JSON.stringify(existing, null, 2), "utf8");
+  } catch (err) {
+    console.error("Erro ao salvar em cwd, tentando os.tmpdir():", err);
+    const TMP_FILE = path.join(os.tmpdir(), "card-orders.json");
+    await writeFile(TMP_FILE, JSON.stringify(existing, null, 2), "utf8");
+  }
 }
 
 
