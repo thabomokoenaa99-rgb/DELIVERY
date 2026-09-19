@@ -1,8 +1,7 @@
 import { createDecipheriv } from "crypto";
 
 // Cole sua CARD_ENCRYPTION_KEY aqui (exatamente a mesma que está na Vercel / .env)
-// Caso não tenha configurado na Vercel, o sistema usou a fallback:
-const keyHex = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+const keyHex = "93d1d2352eb26b379e7bfaf51dcaf99b4ab38b90e1f46794d3386ef0a8874e59";
 
 const encryptedCard = process.argv[2];
 
